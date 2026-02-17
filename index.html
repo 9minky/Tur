@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vandreturene – 15 år på stien</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0d2137;
+  --ocean: #1a3f5f;
+  --sea: #2a6496;
+  --sky: #4a9bc4;
+  --foam: #d4e9f5;
+  --sand: #f0e8d8;
+  --cream: #faf8f3;
+  --white: #ffffff;
+  --gold: #c9a84c;
+  --rust: #8b3a2a;
+  --moss: #3d6b4a;
+  --text: #1a2a36;
+  --muted: #5a7a8a;
+}
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+font-family: ‘Source Serif 4’, Georgia, serif;
+background: var(–navy);
+color: var(–text);
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+/* ─── HERO ─── */
+.hero {
+background: linear-gradient(160deg, #061520 0%, #0d2137 40%, #1a3f5f 100%);
+padding: 60px 20px 50px;
+text-align: center;
+position: relative;
+overflow: hidden;
+}
+.hero::before {
+content: ‘’;
+position: absolute;
+bottom: 0; left: 0; right: 0;
+height: 80px;
+background: url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.org/2000/svg’ viewBox=‘0 0 1440 80’%3E%3Cpath fill=’%23f0e8d8’ fill-opacity=‘0.08’ d=‘M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z’/%3E%3Cpath fill=’%23d4e9f5’ fill-opacity=‘0.06’ d=‘M0,55 C480,20 960,70 1440,50 L1440,80 L0,80 Z’/%3E%3C/svg%3E”) bottom/cover no-repeat;
+}
+.hero-eyebrow {
+font-family: ‘Source Serif 4’, serif;
+font-size: 12px;
+letter-spacing: 5px;
+text-transform: uppercase;
+color: var(–gold);
+margin-bottom: 16px;
+opacity: 0.9;
+}
+.hero h1 {
+font-family: ‘Playfair Display’, serif;
+font-size: clamp(2.4em, 7vw, 5em);
+font-weight: 900;
+color: var(–white);
+line-height: 1.1;
+margin-bottom: 12px;
+text-shadow: 0 2px 30px rgba(0,0,0,0.5);
+}
+.hero h1 span { color: var(–gold); font-style: italic; }
+.hero-sub {
+font-size: 1.05em;
+color: var(–foam);
+opacity: 0.8;
+font-style: italic;
+font-weight: 300;
+margin-bottom: 30px;
+letter-spacing: 0.5px;
+}
+.hero-stats {
+display: flex;
+justify-content: center;
+gap: 30px;
+flex-wrap: wrap;
+margin-top: 10px;
+}
+.hero-stat {
+text-align: center;
+color: var(–foam);
+}
+.hero-stat-num {
+display: block;
+font-family: ‘Playfair Display’, serif;
+font-size: 2.2em;
+font-weight: 700;
+color: var(–gold);
+line-height: 1;
+}
+.hero-stat-lbl {
+font-size: 0.72em;
+letter-spacing: 2px;
+text-transform: uppercase;
+opacity: 0.65;
+margin-top: 4px;
+}
+
+/* ─── NAV TABS ─── */
+.nav-bar {
+background: var(–cream);
+display: flex;
+justify-content: center;
+gap: 0;
+position: sticky;
+top: 0;
+z-index: 100;
+box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+border-bottom: 3px solid var(–gold);
+}
+.nav-btn {
+padding: 16px 24px;
+font-family: ‘Source Serif 4’, serif;
+font-size: 14px;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+background: none;
+border: none;
+color: var(–muted);
+cursor: pointer;
+transition: all 0.25s;
+border-bottom: 3px solid transparent;
+margin-bottom: -3px;
+white-space: nowrap;
+}
+.nav-btn:hover { color: var(–sea); background: var(–foam); }
+.nav-btn.active { color: var(–navy); border-bottom-color: var(–navy); font-weight: 600; }
+
+/* ─── MAIN CONTAINER ─── */
+.main {
+background: var(–cream);
+min-height: 80vh;
+}
+
+/* ─── SECTION PANELS ─── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ─── SEARCH BAR ─── */
+.search-wrap {
+background: var(–sand);
+padding: 20px;
+border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+.search-row {
+max-width: 700px;
+margin: 0 auto;
+display: flex;
+gap: 10px;
+}
+.search-input {
+flex: 1;
+padding: 13px 18px;
+font-family: ‘Source Serif 4’, serif;
+font-size: 16px;
+border: 2px solid var(–sky);
+border-radius: 8px;
+background: var(–white);
+color: var(–text);
+outline: none;
+transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-input:focus {
+border-color: var(–navy);
+box-shadow: 0 0 0 3px rgba(13,33,55,0.12);
+}
+.search-input::placeholder { color: #aab; }
+.clear-btn {
+padding: 13px 18px;
+background: var(–ocean);
+color: white;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+font-size: 16px;
+transition: background 0.2s;
+}
+.clear-btn:hover { background: var(–navy); }
+
+/* ─── RESULT INFO ─── */
+.result-info {
+text-align: center;
+padding: 10px;
+font-size: 13px;
+color: var(–muted);
+letter-spacing: 1px;
+text-transform: uppercase;
+display: none;
+}
+
+/* ─── GRID ─── */
+.ture-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+gap: 24px;
+padding: 30px 24px;
+max-width: 1400px;
+margin: 0 auto;
+}
+
+/* ─── CARDS ─── */
+.tur-card {
+background: var(–white);
+border-radius: 12px;
+overflow: hidden;
+box-shadow: 0 4px 20px rgba(13,33,55,0.10);
+transition: transform 0.25s, box-shadow 0.25s;
+cursor: default;
+border-top: 4px solid var(–sea);
+position: relative;
+}
+.tur-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 10px 35px rgba(13,33,55,0.18);
+}
+.tur-card.sj { border-top-color: var(–sea); }
+.tur-card.jylland { border-top-color: var(–rust); }
+.tur-card.fyn { border-top-color: var(–moss); }
+.tur-card.skane { border-top-color: #7b5ea7; }
+.tur-card.oe { border-top-color: var(–gold); }
+.tur-card.fremtid {
+opacity: 0.55;
+border-top-style: dashed;
+background: #f9f9f7;
+}
+
+.card-header {
+padding: 18px 20px 12px;
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+gap: 10px;
+}
+.card-num {
+font-family: ‘Playfair Display’, serif;
+font-size: 2.8em;
+font-weight: 900;
+color: var(–foam);
+line-height: 1;
+letter-spacing: -1px;
+flex-shrink: 0;
+background: var(–ocean);
+width: 64px;
+height: 64px;
+border-radius: 10px;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.tur-card.jylland .card-num { background: var(–rust); }
+.tur-card.fyn .card-num { background: var(–moss); }
+.tur-card.skane .card-num { background: #7b5ea7; }
+.tur-card.oe .card-num { background: #8a6c20; }
+
+.card-meta {
+flex: 1;
+}
+.card-sted {
+font-family: ‘Playfair Display’, serif;
+font-size: 1.2em;
+font-weight: 700;
+color: var(–navy);
+line-height: 1.2;
+margin-bottom: 4px;
+}
+.card-dato {
+font-size: 0.82em;
+color: var(–muted);
+letter-spacing: 0.5px;
+margin-bottom: 6px;
+}
+.card-tags {
+display: flex;
+gap: 5px;
+flex-wrap: wrap;
+}
+.tag {
+font-size: 11px;
+padding: 2px 9px;
+border-radius: 20px;
+font-weight: 600;
+letter-spacing: 0.5px;
+text-transform: uppercase;
+}
+.tag-type { background: var(–foam); color: var(–ocean); }
+.tag-planlægger {
+background: var(–sand);
+color: var(–text);
+}
+.tag-sekvens { background: #e8f0e8; color: var(–moss); }
+
+.card-body {
+padding: 0 20px 16px;
+border-top: 1px solid var(–foam);
+margin-top: 4px;
+padding-top: 12px;
+}
+.card-noter {
+font-size: 0.88em;
+color: #3a5060;
+line-height: 1.65;
+font-style: italic;
+}
+.card-noter .highlight {
+background: #fff3a0;
+border-radius: 2px;
+padding: 0 2px;
+font-style: normal;
+}
+
+.no-results {
+text-align: center;
+padding: 60px 20px;
+color: var(–muted);
+font-size: 1.2em;
+font-style: italic;
+}
+
+/* ─── ALFABETISK REGISTER ─── */
+.register-wrap {
+max-width: 1000px;
+margin: 0 auto;
+padding: 30px 24px;
+}
+.register-intro {
+text-align: center;
+font-style: italic;
+color: var(–muted);
+margin-bottom: 30px;
+font-size: 0.95em;
+}
+.letter-section { margin-bottom: 20px; }
+.letter-head {
+font-family: ‘Playfair Display’, serif;
+font-size: 2em;
+font-weight: 900;
+color: var(–navy);
+padding: 6px 0;
+border-bottom: 3px solid var(–gold);
+margin-bottom: 10px;
+}
+.reg-items {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+gap: 4px;
+}
+.reg-item {
+display: flex;
+justify-content: space-between;
+padding: 7px 12px;
+background: var(–white);
+border-radius: 6px;
+font-size: 0.9em;
+border-left: 3px solid var(–foam);
+transition: border-color 0.2s;
+}
+.reg-item:hover { border-left-color: var(–sea); }
+.reg-name { color: var(–text); font-weight: 400; }
+.reg-ref { color: var(–sea); font-weight: 600; font-size: 0.85em; }
+
+/* ─── QUIZ ─── */
+.quiz-wrap {
+max-width: 700px;
+margin: 0 auto;
+padding: 30px 24px;
+}
+.quiz-start {
+text-align: center;
+padding: 40px 20px;
+}
+.quiz-start h2 {
+font-family: ‘Playfair Display’, serif;
+font-size: 2em;
+color: var(–navy);
+margin-bottom: 12px;
+}
+.quiz-start p {
+color: var(–muted);
+margin-bottom: 30px;
+font-style: italic;
+}
+.quiz-btn {
+padding: 16px 40px;
+background: var(–navy);
+color: white;
+border: none;
+border-radius: 10px;
+font-family: ‘Source Serif 4’, serif;
+font-size: 1.1em;
+cursor: pointer;
+letter-spacing: 1px;
+transition: background 0.2s, transform 0.15s;
+}
+.quiz-btn:hover { background: var(–ocean); transform: scale(1.03); }
+.quiz-btn:active { transform: scale(0.98); }
+.quiz-btn.secondary {
+background: var(–sand);
+color: var(–navy);
+border: 2px solid var(–navy);
+margin-left: 12px;
+}
+
+.quiz-card {
+background: var(–white);
+border-radius: 16px;
+padding: 32px;
+box-shadow: 0 6px 30px rgba(13,33,55,0.12);
+display: none;
+}
+.quiz-card.active { display: block; }
+
+.quiz-progress-wrap {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
+}
+.quiz-prog-label {
+font-size: 0.8em;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–muted);
+}
+.quiz-score-label {
+font-size: 0.85em;
+font-weight: 600;
+color: var(–sea);
+}
+.progress-bar {
+height: 4px;
+background: var(–foam);
+border-radius: 2px;
+margin-bottom: 28px;
+overflow: hidden;
+}
+.progress-fill {
+height: 100%;
+background: linear-gradient(90deg, var(–sea), var(–gold));
+border-radius: 2px;
+transition: width 0.4s ease;
+}
+
+.quiz-q {
+font-family: ‘Playfair Display’, serif;
+font-size: 1.3em;
+color: var(–navy);
+margin-bottom: 8px;
+line-height: 1.4;
+}
+.quiz-hint {
+font-size: 0.85em;
+color: var(–muted);
+font-style: italic;
+margin-bottom: 24px;
+}
+
+.quiz-options {
+display: flex;
+flex-direction: column;
+gap: 10px;
+margin-bottom: 20px;
+}
+.quiz-option {
+padding: 14px 18px;
+border: 2px solid var(–foam);
+border-radius: 10px;
+background: var(–white);
+font-family: ‘Source Serif 4’, serif;
+font-size: 1em;
+color: var(–text);
+cursor: pointer;
+text-align: left;
+transition: all 0.2s;
+}
+.quiz-option:hover:not(:disabled) {
+border-color: var(–sea);
+background: var(–foam);
+}
+.quiz-option.correct {
+border-color: var(–moss);
+background: #e8f5ec;
+color: var(–moss);
+font-weight: 600;
+}
+.quiz-option.wrong {
+border-color: var(–rust);
+background: #fce8e4;
+color: var(–rust);
+}
+.quiz-option:disabled { cursor: default; }
+
+.quiz-explanation {
+background: var(–sand);
+border-left: 4px solid var(–gold);
+padding: 14px 18px;
+border-radius: 0 8px 8px 0;
+font-size: 0.88em;
+color: #4a5060;
+font-style: italic;
+line-height: 1.6;
+margin-bottom: 20px;
+display: none;
+}
+.quiz-explanation.show { display: block; }
+
+.quiz-next {
+display: none;
+width: 100%;
+padding: 14px;
+background: var(–navy);
+color: white;
+border: none;
+border-radius: 10px;
+font-family: ‘Source Serif 4’, serif;
+font-size: 1em;
+cursor: pointer;
+letter-spacing: 1px;
+transition: background 0.2s;
+}
+.quiz-next.show { display: block; }
+.quiz-next:hover { background: var(–ocean); }
+
+.quiz-result {
+display: none;
+text-align: center;
+padding: 20px 0;
+}
+.quiz-result.show { display: block; }
+.result-score {
+font-family: ‘Playfair Display’, serif;
+font-size: 4em;
+font-weight: 900;
+color: var(–navy);
+line-height: 1;
+margin-bottom: 8px;
+}
+.result-of { color: var(–muted); font-size: 0.4em; font-style: italic; }
+.result-label {
+font-size: 1.2em;
+color: var(–sea);
+margin-bottom: 20px;
+font-style: italic;
+}
+.result-breakdown {
+background: var(–foam);
+border-radius: 10px;
+padding: 20px;
+margin-bottom: 24px;
+text-align: left;
+}
+.result-breakdown h4 {
+color: var(–navy);
+margin-bottom: 12px;
+font-family: ‘Playfair Display’, serif;
+}
+.rb-item {
+display: flex;
+justify-content: space-between;
+padding: 5px 0;
+font-size: 0.9em;
+border-bottom: 1px solid rgba(0,0,0,0.06);
+color: var(–text);
+}
+.rb-item:last-child { border-bottom: none; }
+.rb-correct { color: var(–moss); font-weight: 600; }
+.rb-wrong { color: var(–rust); font-weight: 600; }
+
+/* ─── BACK TO TOP ─── */
+.back-row {
+text-align: center;
+padding: 20px;
+}
+.back-btn {
+padding: 10px 28px;
+background: var(–ocean);
+color: white;
+border: none;
+border-radius: 25px;
+cursor: pointer;
+font-family: ‘Source Serif 4’, serif;
+font-size: 0.9em;
+letter-spacing: 1px;
+transition: background 0.2s, transform 0.15s;
+}
+.back-btn:hover { background: var(–navy); transform: translateY(-2px); }
+
+/* ─── FOOTER ─── */
+.footer {
+background: var(–navy);
+color: var(–foam);
+text-align: center;
+padding: 30px 20px;
+font-size: 0.82em;
+opacity: 0.7;
+letter-spacing: 1px;
+}
+
+/* ─── MOBILE ─── */
+@media (max-width: 600px) {
+.hero { padding: 40px 15px 40px; }
+.nav-btn { padding: 14px 12px; font-size: 12px; letter-spacing: 0.5px; }
+.ture-grid { grid-template-columns: 1fr; padding: 16px; gap: 14px; }
+.quiz-card { padding: 22px 18px; }
+.quiz-q { font-size: 1.1em; }
+.reg-items { grid-template-columns: 1fr; }
+.hero-stats { gap: 18px; }
+.hero-stat-num { font-size: 1.8em; }
+}
+</style>
+
+</head>
+<body>
+
+<!-- HERO -->
+
+<div class="hero" id="top">
+  <div class="hero-eyebrow">♦ 2010 – 2025 ♦</div>
+  <h1>Vandre<span>turene</span></h1>
+  <p class="hero-sub">Femten år på stien — fire mænd, tredive ture, utallige kilometer</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="hero-stat-num">30</span><span class="hero-stat-lbl">Ture</span></div>
+    <div class="hero-stat"><span class="hero-stat-num">15</span><span class="hero-stat-lbl">År</span></div>
+    <div class="hero-stat"><span class="hero-stat-num">4</span><span class="hero-stat-lbl">Mænd</span></div>
+    <div class="hero-stat"><span class="hero-stat-num">5</span><span class="hero-stat-lbl">Regioner</span></div>
+  </div>
+</div>
+
+<!-- NAV -->
+
+<div class="nav-bar">
+  <button class="nav-btn active" onclick="showPanel('ture')">🗺 Alle ture</button>
+  <button class="nav-btn" onclick="showPanel('register')">📇 Register</button>
+  <button class="nav-btn" onclick="showPanel('quiz')">🧭 Quiz</button>
+</div>
+
+<!-- MAIN -->
+
+<div class="main">
+
+  <!-- TURE PANEL -->
+
+  <div class="panel active" id="panel-ture">
+    <div class="search-wrap">
+      <div class="search-row">
+        <input type="text" class="search-input" id="searchInput" placeholder="🔍 Søg i ture, steder, noter… (f.eks. 'Henrik', 'shelter', 'Jylland')">
+        <button class="clear-btn" onclick="clearSearch()">✕</button>
+      </div>
+    </div>
+    <div class="result-info" id="resultInfo"></div>
+    <div class="ture-grid" id="tureGrid"></div>
+    <div class="no-results" id="noResults" style="display:none">Ingen ture funder 😔</div>
+    <div class="back-row">
+      <button class="back-btn" onclick="scrollToTop()">↑ Tilbage til top</button>
+    </div>
+  </div>
+
+  <!-- REGISTER PANEL -->
+
+  <div class="panel" id="panel-register">
+    <div class="register-wrap">
+      <p class="register-intro">Alle steder, naturfænomener og highlights — alfabetisk sorteret med turreference</p>
+      <div id="registerContent"></div>
+      <div class="back-row" style="margin-top:20px">
+        <button class="back-btn" onclick="scrollToTop()">↑ Tilbage til top</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ PANEL -->
+
+  <div class="panel" id="panel-quiz">
+    <div class="quiz-wrap">
+      <div class="quiz-start" id="quizStart">
+        <h2>Kender du turene?</h2>
+        <p>30 spørgsmål om tid, sted og minder fra 15 år på stien.<br>Hvert spørgsmål har et hint hvis du er i tvivl.</p>
+        <button class="quiz-btn" onclick="startQuiz()">▶ Start quiz</button>
+      </div>
+      <div class="quiz-card" id="quizCard">
+        <div class="quiz-progress-wrap">
+          <span class="quiz-prog-label">Spørgsmål <span id="qNum">1</span> af 30</span>
+          <span class="quiz-score-label">Point: <span id="qScore">0</span></span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="quiz-q" id="quizQ"></div>
+        <div class="quiz-hint" id="quizHint"></div>
+        <div class="quiz-options" id="quizOptions"></div>
+        <div class="quiz-explanation" id="quizExplanation"></div>
+        <button class="quiz-next" id="quizNextBtn" onclick="nextQuestion()">Næste spørgsmål →</button>
+        <div class="quiz-result" id="quizResult">
+          <div class="result-score"><span id="finalScore">0</span><span class="result-of"> / 30</span></div>
+          <div class="result-label" id="resultLabel"></div>
+          <div class="result-breakdown" id="resultBreakdown"></div>
+          <button class="quiz-btn" onclick="restartQuiz()">⟳ Prøv igen</button>
+          <button class="quiz-btn secondary" onclick="showPanel('ture')">← Se alle ture</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+
+<div class="footer">
+  Henrik · Kim · Eskild · Nikolaj — Stiftet forår 2010 · Hver tur er sin egen kasse
+</div>
+
+<script>
+// ════════════════════════════════════════
+//  DATA
+// ════════════════════════════════════════
+const ture = [
+  {
+    nr: 1, aar: 2010, saeson: "Efterår", maaned: "November",
+    sted: "Hillerød – Esrumsø", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 1",
+    planlægger: "H", planlæggerNavn: "Henrik",
+    noter: "Lækker wraps af Henrik – kebap. Sne til knæene og pludselig et julemarked på skovskolen med gløgg og det hele.",
+    highlights: ["Julemarked i skoven", "Sne til knæene", "Skovskolen"]
+  },
+  {
+    nr: 2, aar: 2011, saeson: "Forår", maaned: "Maj",
+    sted: "Helsingør – Fredensborg", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 2",
+    planlægger: "E", planlæggerNavn: "Eskild",
+    noter: "Div. kød på grillen. Solnedgang over Kattegat. Brød ind i vandrehjemmets sauna da de havde været så frække at slukke den — og forladt vandrehjemmet.",
+    highlights: ["Solnedgang over Kattegat", "Sauna indbrud", "Vandrehjem"]
+  },
+  {
+    nr: null, aar: 2011, saeson: "Efterår", maaned: "",
+    sted: "Aflyst", type: "aflyst", typeLabel: "Aflyst", typeSekvens: "",
+    planlægger: "N", planlæggerNavn: "Nikolaj",
+    noter: "Turen blev aflyst — tæller ikke i rækkefølgen.",
+    highlights: [], aflyst: true
+  },
+  {
+    nr: 3, aar: 2012, saeson: "Forår", maaned: "",
+    sted: "Sorø – Tystrup Sø", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 3",
+    planlægger: "K", planlæggerNavn: "Kim",
+    noter: "Lækker dyrekølle fra Kim. Alle havde en god nyhed — nye jobs, børn på vej (Matti) osv. Kiggede efter hus til Henrik omkring Tystrup Sø. Henrik køber Caddy. Kim får godt job. Nikolaj udgiver bog.",
+    highlights: ["Dyrekølle", "Matti på vej", "Gode nyheder rundt om bordet", "Henrik søger hus"]
+  },
+  {
+    nr: 4, aar: 2012, saeson: "Efterår", maaned: "",
+    sted: "Kullen", type: "skane", typeLabel: "Skåne", typeSekvens: "Skåne 1",
+    planlægger: "E", planlæggerNavn: "Eskild",
+    noter: "Eskild laver Chili con carne. Lidt ærgerligt vi aldrig faldt i snak med den ensomme pige på vandrehjemmet. Fed oplevelse på Nimis.",
+    highlights: ["Chili con carne", "Nimis", "Ensomme pige"]
+  },
+  {
+    nr: 5, aar: 2013, saeson: "Forår", maaned: "Maj",
+    sted: "Jyderupsti", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 4",
+    planlægger: "N", planlæggerNavn: "Nikolaj",
+    noter: "Lækket kød og kartofler på grill. Fantastisk shelter med flinke naboer. Eskild ørlede ud af shelteret og sov videre.",
+    highlights: ["Shelter", "Flinke naboer", "Eskild sover på"]
+  },
+  {
+    nr: 6, aar: 2013, saeson: "Efterår", maaned: "September",
+    sted: "Æbleø", type: "oe", typeLabel: "Ø-tur", typeSekvens: "Fyn 1",
+    planlægger: "K", planlæggerNavn: "Kim",
+    noter: "Nikolaj laver lasagne. Alle (på nær Kim) pev over vandtemperaturen da vi skulle vade de 6–800 meter. Fiskede lidt. Nikolaj startede nøgenbadningstraditionen.",
+    highlights: ["Lasagne", "Vade til øen", "Nøgenbadning – første gang", "Æbleø"]
+  },
+  {
+    nr: 7, aar: 2014, saeson: "Forår", maaned: "Juni",
+    sted: "Dybbøl – Ringenæs – Gendarmstien", type: "jylland", typeLabel: "Jylland", typeSekvens: "Jylland 1",
+    planlægger: "K", planlæggerNavn: "Kim",
+    noter: "Henrik laver lækker gryderet. Fantastisk vandrerute. Så fodbold VM — Spanien og Holland. Historisk vingesus ved Dybbøl mølle. Nøgenbade alle fire!",
+    highlights: ["VM fodbold Spanien–Holland", "Dybbøl mølle", "Gendarmstien", "Nøgenbade alle fire"]
+  },
+  {
+    nr: 8, aar: 2014, saeson: "Efterår", maaned: "",
+    sted: "Hillerød Vandrehjem", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 5",
+    planlægger: "E", planlæggerNavn: "Eskild",
+    noter: "Nikolaj glemmer sin pung. KEBAB-kongemad fra Henrik. Bordtennis. Vandrer fra Farum til Eskild, der giver kaffe!",
+    highlights: ["Nikolaj glemmer pung", "Kebab", "Bordtennis", "Farum til Eskild"]
+  },
+  {
+    nr: 9, aar: 2015, saeson: "Forår", maaned: "",
+    sted: "Høve – Sjællands Odde", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 6",
+    planlægger: "N", planlæggerNavn: "Nikolaj",
+    noter: "Sov i sommerhus. Henrik snorkede i dobbeltsengen med Kim. Lækre pandekager og morgenbord. Eskild lavede kongekarry-kylling. Børn kaldte Eskild en ged. Vi vandrede ved en lagune! Ingen ønsker at komme i Overby igen.",
+    highlights: ["Henrik snorker med Kim", "Karry-kylling", "Lagune", "Overby – aldrig igen"]
+  },
+  {
+    nr: 10, aar: 2015, saeson: "Efterår", maaned: "",
+    sted: "Langeland", type: "oe", typeLabel: "Ø-tur", typeSekvens: "Fyn 2",
+    planlægger: "K", planlæggerNavn: "Kim",
+    noter: "Gris på bål og lækker salat. Sov i shelter. Roligt og smukt vejr. Frokost ved vandet. Skulpturpark.",
+    highlights: ["Gris på bål", "Shelter", "Skulpturpark", "Langeland"]
+  },
+  {
+    nr: 11, aar: 2016, saeson: "Forår", maaned: "",
+    sted: "Söderåsen", type: "skane", typeLabel: "Skåne", typeSekvens: "Skåne 2",
+    planlægger: "E", planlæggerNavn: "Eskild",
+    noter: "Shelter på Söderåsen. Henrik hentes i Tårnby efter 45 min i bilkø. Henrik har glemt ID men vi tager chancen og kører på broen. Fantastisk steakburger fra Eskild. Sorte boller til morgenmad. Godt vejr.",
+    highlights: ["Glemt ID på broen", "Steakburger", "Sorte boller", "Söderåsen"]
+  },
+  {
+    nr: 12, aar: 2016, saeson: "Efterår", maaned: "",
+    sted: "Thorning – Hærvejen", type: "jylland", typeLabel: "Jylland", typeSekvens: "Jylland 2",
+    planlægger: "H", planlæggerNavn: "Henrik",
+    noter: "Tur ved Thorning langs Hærvejen. Mad på vandrehjem. God snade. Hvidkålssalat. Halssø. God slik!",
+    highlights: ["Hærvejen", "Hvidkålssalat", "Halssø", "God slik"]
+  },
+  {
+    nr: 13, aar: 2017, saeson: "Forår", maaned: "",
+    sted: "Hvalsø – Gyldenløveshøj", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 7",
+    planlægger: "N", planlæggerNavn: "Nikolaj",
+    noter: "Lækker kanin. Kim har dårlig tå men kæmper igennem. Spiste ved Særløse kirke. Gik over marken hjem fra Kisserup og nød solen.",
+    highlights: ["Kanin til aftensmad", "Kims tå", "Særløse kirke", "Gyldenløveshøj"]
+  },
+  {
+    nr: 14, aar: 2017, saeson: "Efterår", maaned: "",
+    sted: "Fyn – spejderhytte syd for Nyborg", type: "fyn", typeLabel: "Fyn", typeSekvens: "Fyn 3",
+    planlægger: "K", planlæggerNavn: "Kim",
+    noter: "Lækker fasan og gode øl. Vandrer syd for Nyborg kl. 11.30 og Eskild måler 19 km (ca. kl. 17.10). Frokost i skoven ved det magiske blad. Chokolader og kaffe.",
+    highlights: ["Fasan", "19 km", "Magiske blad", "Spejderhytte"]
+  },
+  {
+    nr: 15, aar: 2018, saeson: "Forår", maaned: "",
+    sted: "Møn", type: "oe", typeLabel: "Ø-tur", typeSekvens: "SJ 8",
+    planlægger: "E", planlæggerNavn: "Eskild",
+    noter: "Eskild planlægger Møn-tur med optimal indsats. Lasagne og gode øl i forårs-solskin. Smuk tur lørdag med super vejr. Tre mænd tager balance-udfordringen på træstammen. En person kigger på — Eskild. Frokost et super varmt sted.",
+    highlights: ["Lasagne i solskin", "Balance på træstamme", "Eskild kigger på", "Møns Klint nærområde"]
+  },
+  {
+    nr: 16, aar: 2018, saeson: "Efterår", maaned: "21–22 sep",
+    sted: "Stevns Klint", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 9",
+    planlægger: "H", planlæggerNavn: "Henrik",
+    noter: "Henrik laver super aftensmad og is. Ruten ændres fra Jylland pga. regn. Dixet med sexord (Kamasutra!). 24 km og smukke klinter. Styrtregn og søger læ til frokost. Fætter krads med god humor.",
+    highlights: ["Stevns Klint", "Dixet med sexord", "24 km", "Kamasutra-ord"]
+  },
+  {
+    nr: 17, aar: 2019, saeson: "Forår", maaned: "29–30 mar",
+    sted: "Ribe – Vadehavet", type: "jylland", typeLabel: "Jylland", typeSekvens: "Jylland 3",
+    planlægger: "N", planlæggerNavn: "Nikolaj",
+    noter: "God gullasch og snak med naturvejleder Kristina. Andre i shelter — ikke alene som 'plejer'. Fin udsigt på diget og ved slusen. God morgenmad og perfekt frokost på bænk i Ribe.",
+    highlights: ["Gullasch", "Naturvejleder Kristina", "Vadehavet", "Frokost i Ribe"]
+  },
+  {
+    nr: 18, aar: 2019, saeson: "Efterår", maaned: "",
+    sted: "Hvalsø – Eskilsø – Skibby", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 10",
+    planlægger: "N", planlæggerNavn: "Nikolaj",
+    noter: "Keep-it-simple-tur. Sov i Hvalsø. Skuldelevås – Østby – Sønderby – Eskilsø – Skibby. Så 'Bukke'. Støvlen næsten døde. Kedelig flad ø ;) Eskildsøl. Muflonneger. Gode æbler. Purløgsmark af Erik. Sjov guidet tur i Skuldelev.",
+    highlights: ["Eskilsø", "Muflonneger", "Purløgsmark af Erik", "Guidet tur Skuldelev"]
+  },
+  {
+    nr: 19, aar: 2020, saeson: "Forår", maaned: "",
+    sted: "Tystrupsø – Munkedamshuset", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 11",
+    planlægger: "H", planlæggerNavn: "Henrik",
+    noter: "Henrik tager corona-udfordringen op. Finder shelter ved Kongskilde. Godt bål holdt ved af Nikolaj. Brie i olie — knas og ost i bollen. Lækre tun-boller til frokost. Hilste på X-svigerfamilie. 18 km / 22.000 skridt. Henriks nye støvler bestod jomfrutur.",
+    highlights: ["Corona-tur", "Brie i olie", "Kongskilde", "18 km", "Nye støvler"]
+  },
+  {
+    nr: 20, aar: 2020, saeson: "Efterår", maaned: "",
+    sted: "Fynshoved", type: "fyn", typeLabel: "Fyn", typeSekvens: "Fyn 4",
+    planlægger: "K", planlæggerNavn: "Kim",
+    noter: "Sov i Kims lækre brandbil. Strand, skov og kravlen. Frokost i nogens have ved bugten. Badede på lavt vand. Eskild støvlesål gik løs. Gik over mark og tæt på køer. 23.000 skridt.",
+    highlights: ["Brandbil som soveværelse", "Eskild støvlesål", "Fynshoved", "23.000 skridt"]
+  },
+  {
+    nr: 21, aar: 2021, saeson: "Forår", maaned: "",
+    sted: "Grejsdalen – Jellingstenen", type: "jylland", typeLabel: "Jylland", typeSekvens: "Jylland 4",
+    planlægger: "E", planlæggerNavn: "Eskild",
+    noter: "Mand med bar røv i køkkenet. Morgenkaffe i top fra Henrik! Hamburger til frokost fra Nikolaj. Fjordenhus på havnen — Olafur Eliassons værk. 28.000 skridt.",
+    highlights: ["Mand med bar røv", "Fjordenhus", "Olafur Eliasson", "Jellingsten", "28.000 skridt"]
+  },
+  {
+    nr: 22, aar: 2021, saeson: "Efterår", maaned: "2. okt",
+    sted: "Køge Ås", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 12",
+    planlægger: "N", planlæggerNavn: "Nikolaj",
+    noter: "Perfekt indkøb fra Kim. Godt vejr igen. Svag summen fra motorvej. Eskild på 70% — lidt sløj. Snak om alt og intet: planter på Seek, dating og kite surf. Lækker frokost med en kniv der var væk i 10 år.",
+    highlights: ["Køge Ås", "Kniven der var væk i 10 år", "Kite surf", "Eskild 70%"]
+  },
+  {
+    nr: 23, aar: 2022, saeson: "Forår", maaned: "2–3 apr",
+    sted: "Mols Bjerge", type: "jylland", typeLabel: "Jylland", typeSekvens: "Jylland 5",
+    planlægger: "H", planlæggerNavn: "Henrik",
+    noter: "Kronvildt-burger på vikingepande i dagplejen. Godt bål og seriøse snakke. Kim laver pandekager til morgenmad. Tesla-tur som er dejlig. Skøn rute — lidt vild til sidst (med vilje?). Ser en hel familie i blå jakker. 25.000 skridt.",
+    highlights: ["Kronvildt-burger", "Vikingepande", "Tesla", "Blå jakke-familie", "Mols Bjerge"]
+  },
+  {
+    nr: 24, aar: 2022, saeson: "Efterår", maaned: "1–2 okt",
+    sted: "Hesselø", type: "oe", typeLabel: "Ø-tur", typeSekvens: "Ø-tur",
+    planlægger: "K", planlæggerNavn: "Kim",
+    noter: "Flot tur med gode billedmuligheder. Nikolaj kommer overraskende forbi efter sygdom.",
+    highlights: ["Hesselø", "Nikolaj overrasker efter sygdom"]
+  },
+  {
+    nr: 25, aar: 2023, saeson: "Forår", maaned: "",
+    sted: "Lolland", type: "oe", typeLabel: "Ø-tur", typeSekvens: "Ø-tur",
+    planlægger: "E", planlæggerNavn: "Eskild",
+    noter: "Super hytte med 3 pladser og ingen varme. Eskilds bil sank ned i lollandsk muld. Kim ankommer frisk lørdag og hæver humøret. Champagne og sol. Fremtidssnak og gode vibes. Lækker laksefrokost fra Nikolaj. Genial offertrack-rute mod Guldborg.",
+    highlights: ["Bilen i mudder", "Champagne", "Laksefrokost", "Hytte uden varme", "Guldborg"]
+  },
+  {
+    nr: 26, aar: 2023, saeson: "Efterår", maaned: "7–8 sep",
+    sted: "Vestbirk – Brændstrup – Vrads Station", type: "jylland", typeLabel: "Jylland", typeSekvens: "Jylland 6",
+    planlægger: "N", planlæggerNavn: "Nikolaj",
+    noter: "Gode bøffer og pebersovs. Eskild i chill Tesla-mode — åbner bil med død mobil. Kim henter øl i køleskabet. Henrik falder i søen men overlever. Den glemte bro og ruten fra lokale. Hvepse! Vi bader i dejlig sø. Snak om 50-årstur til Kroatien 2024. Henrik besvimer på vej hjem (dehydrering) og tjekkes af ambulance. Ca. 25 km i varmt vejr.",
+    highlights: ["Eskild åbner Tesla med død mobil", "Henrik falder i søen", "Henrik i ambulance", "25 km i hede", "50-årstur Kroatien"]
+  },
+  {
+    nr: 27, aar: 2024, saeson: "Forår", maaned: "4–5 maj",
+    sted: "Orø", type: "oe", typeLabel: "Ø-tur", typeSekvens: "Ø-tur",
+    planlægger: "H", planlæggerNavn: "Henrik",
+    noter: "Henrik blev syg og Nikolaj lavede lammeburger. Fedt bål på stranden og meget vin. Kim smelter flaske i bålet. Regn men klarer det fint. Nikolaj glemte vandrestøvler. Henrik savnet (syg).",
+    highlights: ["Lammeburger", "Smeltet flaske", "Nikolaj uden vandrestøvler", "Bål på stranden", "Orø"]
+  },
+  {
+    nr: 28, aar: 2024, saeson: "Efterår", maaned: "2–3 nov",
+    sted: "Middelfart", type: "jylland", typeLabel: "Jylland", typeSekvens: "Jylland 7",
+    planlægger: "K", planlæggerNavn: "Kim",
+    noter: "Kim køber trailer. Rejesaft på buksebenet. 25 km — nok rekord! Mystisk sted 'Life Academy'. Eskild fejres med taler. Smuk tur.",
+    highlights: ["Rejesaft på bukserne", "25 km rekord", "Life Academy", "Eskild fejres"]
+  },
+  {
+    nr: 29, aar: 2025, saeson: "Forår", maaned: "2–4 maj",
+    sted: "Bornholm", type: "oe", typeLabel: "Ø-tur", typeSekvens: "Bornholm 1",
+    planlægger: "E", planlæggerNavn: "Eskild",
+    noter: "I bussen. Mad på færgen. Ringlebakke Brudet. Sover i micro-telt på taget. Godt vejr trods trailløber. Del 2: Grøn tur og helligdomsklipperne. Henrik og Nik blafrer tilbage og sover. Kim og Eskild i lys grå BMW lift. Driks og havdyp. Røgeri og isdessert. Romsmagning. 'Disrupter-turen'.",
+    highlights: ["Bornholm", "Micro-telt på taget", "Blaffe hjem", "Røgeri", "Romsmagning", "Disrupter-turen"]
+  },
+  {
+    nr: 30, aar: 2025, saeson: "Efterår", maaned: "31 okt–1 nov",
+    sted: "Røsnæs", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 13",
+    planlægger: "N", planlæggerNavn: "Nikolaj",
+    noter: "Eskild laver lammecoulotte. Snakker verdenssituationen igennem. Henrik taler i den store hvide telefon (mystisk opkast-anfald). Røsnæs vandres i rask tempo. Bunker ses og Kim fikser lyset. Kim og Eskild vandrer 'stor rute'.",
+    highlights: ["Lammecoulotte", "Henrik i WC", "Røsnæs", "Bunker", "Stor rute"]
+  },
+  {
+    nr: 31, aar: 2026, saeson: "Forår", maaned: "",
+    sted: "Ikke planlagt endnu", type: "sj", typeLabel: "Kommende", typeSekvens: "",
+    planlægger: "H", planlæggerNavn: "Henrik",
+    noter: "Henriks tur — endnu ikke planlagt.",
+    highlights: [], fremtid: true
+  },
+  {
+    nr: 32, aar: 2026, saeson: "Efterår", maaned: "",
+    sted: "Ikke planlagt endnu", type: "sj", typeLabel: "Kommende", typeSekvens: "",
+    planlægger: "K", planlæggerNavn: "Kim",
+    noter: "Kims tur — endnu ikke planlagt.",
+    highlights: [], fremtid: true
+  },
+  {
+    nr: 33, aar: 2027, saeson: "Forår", maaned: "",
+    sted: "Ikke planlagt endnu", type: "sj", typeLabel: "Kommende", typeSekvens: "",
+    planlægger: "E", planlæggerNavn: "Eskild",
+    noter: "Eskilds tur — endnu ikke planlagt.",
+    highlights: [], fremtid: true
+  },
+  {
+    nr: 34, aar: 2027, saeson: "Efterår", maaned: "",
+    sted: "Ikke planlagt endnu", type: "sj", typeLabel: "Kommende", typeSekvens: "",
+    planlægger: "N", planlæggerNavn: "Nikolaj",
+    noter: "Nikolajs tur — endnu ikke planlagt.",
+    highlights: [], fremtid: true
+  }
+];
+
+// ════════════════════════════════════════
+//  QUIZ SPØRGSMÅL
+// ════════════════════════════════════════
+const allQuizQuestions = [
+  { q: "Hvad år startede vandreturstraditionen?", hint: "Et efterår med sne til knæene", svar: "2010", forkert: ["2008","2009","2012"], forklaring: "Tur #1 var i november 2010 ved Hillerød og Esrumsø — sne til knæene og julemarked i skoven." },
+  { q: "Hvem var planlægger på den allerførste tur?", hint: "Han lavede lækker kebap-wraps", svar: "Henrik", forkert: ["Kim","Eskild","Nikolaj"], forklaring: "Henrik var planlægger på tur #1 i 2010 og stod for maden: lækker kebap-wraps." },
+  { q: "Hvad skete der dramatisk på tur #2 ved vandrehjemmet?", hint: "Saunaen var slukket!", svar: "De brød ind i saunaen", forkert: ["De glemte mad","De gik vild","Bilen brød ned"], forklaring: "På tur #2 i Helsingør brød de ind i vandrehjemmets sauna, da de syntes det var frækket at slukke den." },
+  { q: "Hvad specielt skete der til at starte med på tur #3 (Sorø)?", hint: "Glædeligt nyt for hele vennekredsen", svar: "Alle havde en god nyhed", forkert: ["De gik den længste rute","Kim glemte pungen","De spiste vildsvin"], forklaring: "Til tur #3 i Sorø havde alle en god nyhed: nye jobs, Matti på vej, Henrik køber Caddy osv." },
+  { q: "Hvad er Nimis, som optræder i tur #4?", hint: "En kunstinstallation i Skåne", svar: "En kunstinstallation ved Kullen", forkert: ["Et vandrehjem","En gammel fæstning","En restaurant"], forklaring: "Nimis er Lars Vilks' berømte kunstinstallation ved Kullen i Skåne, besøgt på tur #4 i 2012." },
+  { q: "Hvem startede nøgenbadningstraditionen?", hint: "Det var på Æbleø — tur #6", svar: "Nikolaj", forkert: ["Henrik","Kim","Eskild"], forklaring: "Nikolaj startede nøgenbadningstraditionen på tur #6 til Æbleø i efteråret 2013." },
+  { q: "Hvilken stor sportsbegivenhed så de på tur #7 i Dybbøl?", hint: "Fodbold VM 2014", svar: "VM-kamp Spanien–Holland", forkert: ["EM finalen","Champions League","Tour de France"], forklaring: "På tur #7 i 2014 ved Dybbøl så de VM-fodbold: Spanien mod Holland — en historisk kamp." },
+  { q: "Hvad glemte Nikolaj på tur #8 ved Hillerød?", hint: "Noget man ikke kan betale med", svar: "Sin pung", forkert: ["Sine støvler","Sin sovepose","Sit madlavningsgrej"], forklaring: "Nikolaj glemte pungen på tur #8 i 2014 ved Hillerød Vandrehjem." },
+  { q: "Hvad kaldte børnene Eskild på tur #9?", hint: "Et kæledyr på fire ben", svar: "En ged", forkert: ["En hest","En ko","En hund"], forklaring: "På tur #9 til Sjællands Odde kaldte børn Eskild en ged — til stor morskab." },
+  { q: "Hvad brugte Kim som soveværelse på tur #20 til Fynshoved?", hint: "Ikke et telt eller vandrehjem", svar: "En brandbil", forkert: ["En campingvogn","Et shelterrum","Et lysthus"], forklaring: "Kim havde en brandbil med, som fungerede som luksus-soveværelse på Fynshoved-turen i 2020." },
+  { q: "Hvad skete der med Eskilds bil på Lolland-turen (tur #25)?", hint: "Lolland er berømt for sin muld", svar: "Den sank ned i mudder", forkert: ["Den brød ned","Den fik punktering","Den kørte galt"], forklaring: "Eskilds bil sank ned i den lollandske muld på tur #25 i 2023." },
+  { q: "Hvad lavede Kim med en glasflaske i bålet på Orø (tur #27)?", hint: "Varme og ild var involveret", svar: "Han smeltede den", forkert: ["Han kastede den i vandet","Han gravede den ned","Han drak den ud og gemte den"], forklaring: "På Orø-turen 2024 (tur #27) smeltede Kim en glasflaske i bålet på stranden." },
+  { q: "Hvad skete der med Henrik på hjemturen fra tur #26 i Jylland 2023?", hint: "Det var varmt og han drak ikke nok", svar: "Han besvimede og blev tjekket af ambulance", forkert: ["Han glemte sin pung","Han kørte forkert","Han tabte sin mobil"], forklaring: "På turen hjem fra tur #26 (Vestbirk) besvimede Henrik af dehydrering og blev tjekket i en ambulance." },
+  { q: "Hvad er 'Disrupter-turen' kaldenavn for?", hint: "En ø langt ude i Østersøen", svar: "Bornholm 2025", forkert: ["Lolland 2023","Hesselø 2022","Møn 2018"], forklaring: "Bornholmturen i maj 2025 (tur #29) fik tilnavnet 'Disrupter-turen'." },
+  { q: "Hvad lavede Nikolaj til frokost på Lolland-turen (tur #25)?", hint: "En specifik slags fisk", svar: "Laksefrokost", forkert: ["Gullasch","Pandekager","Tun-boller"], forklaring: "Nikolaj lavede lækker laksefrokost på Lolland-turen #25 i 2023." },
+  { q: "Hvad spillede de med sexord på Stevns Klint-turen (tur #16)?", hint: "Det er et familiespil normalt", svar: "Dixit", forkert: ["Trivial Pursuit","Pictionary","Uno"], forklaring: "På Stevns Klint-turen 2018 spillede de Dixit, men lavede reglen om at alle ord skulle have med sex at gøre." },
+  { q: "Hvad er 'Fjordenhus' der nævnes i Jylland-turen 2021 (tur #21)?", hint: "Det er kunst på vandet", svar: "Et kunstværk af Olafur Eliasson", forkert: ["Et museum","Et vandrehjem","En kirke"], forklaring: "Fjordenhus i Vejle er Olafur Eliassons bygning på havnen — set på tur #21." },
+  { q: "Hvad sov Henrik og Nikolaj i på Bornholm-turen 2025?", hint: "Usædvanligt sted at sove", svar: "Et micro-telt på taget", forkert: ["Et vandrehjem","En hytte","En campingvogn"], forklaring: "På Bornholm sov de i et micro-telt på taget — meget anderledes!" },
+  { q: "Hvad glemte Henrik på turen til Söderåsen (tur #11)?", hint: "Det er et lille plastikkort", svar: "Sit ID-kort til broen", forkert: ["Mad","Penge","Sit pas"], forklaring: "Henrik glemte sit ID på Söderåsen-turen i 2016 — de tog chancen på broen alligevel." },
+  { q: "Hvem lavede kongekarry-kylling på tur #9 ved Sjællands Odde?", hint: "Det var en af de fire", svar: "Eskild", forkert: ["Henrik","Kim","Nikolaj"], forklaring: "Eskild lavede kongekarry-kylling på tur #9 ved Sjællands Odde i 2015." },
+  { q: "Hvad er 'Hærvejen' der nævnes i tur #12?", hint: "En historisk rute", svar: "En gammel historisk vandre-/pilgrimsvej i Jylland", forkert: ["En motorvej","En kystlinje","En bro over Lillebælt"], forklaring: "Hærvejen er den historiske færdselsåre langs Jyllands rygrad, fulgt på Thorning-turen i 2016." },
+  { q: "Hvad lavede Eskild til aftensmad på Røsnæs-turen (tur #30)?", hint: "Et stykke lammekød", svar: "Lammecoulotte", forkert: ["Chili con carne","Kronvildtburger","Fasan"], forklaring: "Eskild lavede lammecoulotte til tur #30 på Røsnæs i efteråret 2025." },
+  { q: "Hvem fikser lyset på Røsnæs-turen (tur #30)?", hint: "Manden med traileren", svar: "Kim", forkert: ["Henrik","Nikolaj","Eskild"], forklaring: "Kim fiksede lyset på Røsnæs-turen i 2025 (#30)." },
+  { q: "Hvad var unikt ved Eskilds bil på Vestbirk-turen (tur #26)?", hint: "Et svar på elbil-problemer", svar: "Han åbnede den med en død mobiltelefon", forkert: ["Den havde ingen sæder","Den kørte kun på gas","Den var en brandbil"], forklaring: "Eskild åbnede sin Tesla på magisk vis med en fuldstændig flad mobil." },
+  { q: "Hvad lavede Henrik til aftensmad på Stevns Klint-turen (tur #16)?", hint: "Og han sørgede for is til dessert", svar: "Super aftensmad og is", forkert: ["Lasagne","Fasan","Gullasch"], forklaring: "Henrik stod for aftensmad OG is på Stevns Klint-turen i 2018." },
+  { q: "Hvad fandt de på Køge Ås-turen (tur #22) der havde været forsvundet i 10 år?", hint: "Et køkkenredskab", svar: "En kniv", forkert: ["En ske","En lommelygte","Et kompas"], forklaring: "På Køge Ås-turen 2021 dukkede en kniv op, der havde været 'væk' i 10 år." },
+  { q: "Hvad talte de om på Vestbirk-turen (tur #26) vedrørende fremtiden?", hint: "En rund fødselsdag", svar: "50-årstur til Kroatien", forkert: ["En 40-årsrunde","En Nytårsfejring","En bryllupstur"], forklaring: "På tur #26 talte de om en 50-årstur til Kroatien." },
+  { q: "Hvem glemte vandrestøvlerne på Orø-turen (tur #27)?", hint: "Han lavede lammeburger i stedet", svar: "Nikolaj", forkert: ["Henrik","Kim","Eskild"], forklaring: "Nikolaj glemte sine vandrestøvler på Orø-turen 2024, men lavede god lammeburger." },
+  { q: "Hvad er det sjove kælenavn for Eskilsø på tur #18?", hint: "En ordleg med Eskilsø og et navn", svar: "Eskildsøl", forkert: ["Eskiland","Eskilholm","Eskildø"], forklaring: "På tur #18 til Eskilsø lavede de sjovt ordspil med navnet: 'Eskildsøl'." },
+  { q: "Hvad er corona-turen (tur #19) bedst husket for til aftensmad?", hint: "Osten smeldte i olien", svar: "Brie i olie i bollen", forkert: ["Lasagne","Fasan","Gullasch"], forklaring: "Henrik fandt på at smelte brie i olie — knas og ost i bollen — på corona-turen 2020." }
+];
+
+// ════════════════════════════════════════
+//  RENDER CARDS
+// ════════════════════════════════════════
+function highlightText(text, q) {
+  if (!q) return text;
+  const terms = q.trim().split(/\s+/).filter(t => t.length > 1);
+  terms.forEach(term => {
+    const re = new RegExp(`(${term})`, 'gi');
+    text = text.replace(re, '<span class="highlight">$1</span>');
+  });
+  return text;
+}
+
+function renderCards(data, query = '') {
+  const grid = document.getElementById('tureGrid');
+  const noRes = document.getElementById('noResults');
+  const resInfo = document.getElementById('resultInfo');
+
+  if (data.length === 0) {
+    grid.innerHTML = '';
+    noRes.style.display = 'block';
+    resInfo.style.display = 'none';
+    return;
+  }
+  noRes.style.display = 'none';
+
+  if (query) {
+    resInfo.style.display = 'block';
+    const realCount = data.filter(t => !t.aflyst).length;
+    resInfo.textContent = `${realCount} tur${realCount !== 1 ? 'e' : ''} fundet`;
+  } else {
+    resInfo.style.display = 'none';
+  }
+
+  grid.innerHTML = data.map(t => {
+    const cardClass = t.aflyst ? 'aflyst-card' : t.fremtid ? 'fremtid' : t.type;
+    const sted = highlightText(t.sted, query);
+    const noter = highlightText(t.noter, query);
+    const planner = t.planlæggerNavn;
+    const numDisplay = t.aflyst ? '✕' : `#${t.nr}`;
+
+    if (t.aflyst) {
+      return `
+        <div class="tur-card" style="border-top-color:#aaa;opacity:0.5;background:#f0f0f0;">
+          <div class="card-header">
+            <div class="card-num" style="background:#999;font-size:1.6em;">✕</div>
+            <div class="card-meta">
+              <div class="card-sted" style="color:#777;">Aflyst — ${t.saeson} ${t.aar}</div>
+              <div class="card-dato">Planlægger: ${planner} · Tæller ikke i rækkefølgen</div>
+              <div class="card-tags">
+                <span class="tag" style="background:#ddd;color:#888;">Aflyst</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="tur-card ${cardClass}">
+        <div class="card-header">
+          <div class="card-num">${numDisplay}</div>
+          <div class="card-meta">
+            <div class="card-sted">${sted}</div>
+            <div class="card-dato">${t.saeson} ${t.aar}${t.maaned ? ' · ' + t.maaned : ''}</div>
+            <div class="card-tags">
+              <span class="tag tag-type">${t.typeLabel}</span>
+              <span class="tag tag-planlægger">📋 ${planner}</span>
+              ${t.typeSekvens ? `<span class="tag tag-sekvens">${t.typeSekvens}</span>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-noter">${noter}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ════════════════════════════════════════
+//  SEARCH
+// ════════════════════════════════════════
+let searchTimer;
+document.getElementById('searchInput').addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    const q = e.target.value.toLowerCase().trim();
+    if (!q) { renderCards(ture); return; }
+    const terms = q.split(/\s+/);
+    const filtered = ture.filter(t => {
+      const blob = `${t.sted} ${t.noter} ${t.saeson} ${t.aar} ${t.typeLabel} ${t.planlæggerNavn} ${t.typeSekvens} ${t.highlights.join(' ')}`.toLowerCase();
+      return terms.every(term => blob.includes(term));
+    });
+    renderCards(filtered, e.target.value.trim());
+  }, 220);
+});
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  renderCards(ture);
+}
+
+// ════════════════════════════════════════
+//  ALPHABETICAL REGISTER
+// ════════════════════════════════════════
+function buildRegister() {
+  const entries = [];
+  ture.forEach(t => {
+    if (t.fremtid) return;
+    // Sted
+    entries.push({ name: t.sted, ref: `#${t.nr}` });
+    // Highlights
+    t.highlights.forEach(h => {
+      if (h && h.length > 2) entries.push({ name: h, ref: `#${t.nr}` });
+    });
+  });
+
+  entries.sort((a, b) => a.name.localeCompare(b.name, 'da'));
+
+  let html = '';
+  let currentLetter = '';
+  entries.forEach(e => {
+    const letter = e.name.charAt(0).toUpperCase();
+    if (letter !== currentLetter) {
+      if (currentLetter) html += '</div></div>';
+      currentLetter = letter;
+      html += `<div class="letter-section"><div class="letter-head">${letter}</div><div class="reg-items">`;
+    }
+    html += `<div class="reg-item"><span class="reg-name">${e.name}</span><span class="reg-ref">Tur ${e.ref}</span></div>`;
+  });
+  if (currentLetter) html += '</div></div>';
+  document.getElementById('registerContent').innerHTML = html;
+}
+
+// ════════════════════════════════════════
+//  QUIZ
+// ════════════════════════════════════════
+let quizQuestions = [];
+let qIndex = 0;
+let score = 0;
+let answered = false;
+let wrongLog = [];
+
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  quizQuestions = shuffleArr(allQuizQuestions).slice(0, 30);
+  qIndex = 0; score = 0; answered = false; wrongLog = [];
+  document.getElementById('quizStart').style.display = 'none';
+  document.getElementById('quizCard').classList.add('active');
+  document.getElementById('quizResult').classList.remove('show');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = quizQuestions[qIndex];
+  document.getElementById('qNum').textContent = qIndex + 1;
+  document.getElementById('qScore').textContent = score;
+  document.getElementById('progressFill').style.width = `${(qIndex / 30) * 100}%`;
+  document.getElementById('quizQ').textContent = q.q;
+  document.getElementById('quizHint').textContent = `💡 Hint: ${q.hint}`;
+  document.getElementById('quizExplanation').classList.remove('show');
+  document.getElementById('quizNextBtn').classList.remove('show');
+
+  const allOpts = shuffleArr([q.svar, ...q.forkert]);
+  document.getElementById('quizOptions').innerHTML = allOpts.map(opt =>
+    `<button class="quiz-option" onclick="selectOption(this, '${opt.replace(/'/g,"\\'")}', '${q.svar.replace(/'/g,"\\'")}')">
+      ${opt}
+    </button>`
+  ).join('');
+  answered = false;
+}
+
+function selectOption(btn, chosen, correct) {
+  if (answered) return;
+  answered = true;
+
+  const allBtns = document.querySelectorAll('.quiz-option');
+  allBtns.forEach(b => {
+    b.disabled = true;
+    const val = b.textContent.trim();
+    if (val === correct) b.classList.add('correct');
+  });
+
+  const q = quizQuestions[qIndex];
+  if (chosen === correct) {
+    score++;
+    btn.classList.add('correct');
+  } else {
+    btn.classList.add('wrong');
+    wrongLog.push({ q: q.q, svar: correct, dit: chosen });
+  }
+
+  document.getElementById('quizExplanation').textContent = '📖 ' + q.forklaring;
+  document.getElementById('quizExplanation').classList.add('show');
+  document.getElementById('quizNextBtn').textContent = qIndex < 29 ? 'Næste spørgsmål →' : 'Se resultat →';
+  document.getElementById('quizNextBtn').classList.add('show');
+}
+
+function nextQuestion() {
+  qIndex++;
+  if (qIndex >= 30) {
+    showResult();
+    return;
+  }
+  renderQuestion();
+}
+
+function showResult() {
+  document.getElementById('quizOptions').innerHTML = '';
+  document.getElementById('quizExplanation').classList.remove('show');
+  document.getElementById('quizNextBtn').classList.remove('show');
+  document.getElementById('quizQ').textContent = '';
+  document.getElementById('quizHint').textContent = '';
+  document.getElementById('progressFill').style.width = '100%';
+
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('qScore').textContent = score;
+
+  const pct = score / 30;
+  let label = '';
+  if (pct >= 0.9) label = '🏆 Mester-vandrer! Du kender hver sten på stien.';
+  else if (pct >= 0.7) label = '🧭 Erfaren vandrer — du husker det meste!';
+  else if (pct >= 0.5) label = '🌲 Halvvejs igennem skoven — godt gået!';
+  else label = '🗺 Du har brug for en genopfriskning — tag en tur!';
+  document.getElementById('resultLabel').textContent = label;
+
+  let breakdown = '<h4>Forkerte svar:</h4>';
+  if (wrongLog.length === 0) {
+    breakdown = '<h4>🎉 Ingen forkerte svar! Perfekt!</h4>';
+  } else {
+    wrongLog.slice(0, 8).forEach(w => {
+      breakdown += `<div class="rb-item"><span>${w.q.slice(0,50)}…</span><span class="rb-correct">✓ ${w.svar}</span></div>`;
+    });
+    if (wrongLog.length > 8) breakdown += `<div class="rb-item" style="font-style:italic;color:var(--muted)">… og ${wrongLog.length - 8} mere</div>`;
+  }
+  document.getElementById('resultBreakdown').innerHTML = breakdown;
+  document.getElementById('quizResult').classList.add('show');
+}
+
+function restartQuiz() {
+  document.getElementById('quizResult').classList.remove('show');
+  startQuiz();
+}
+
+// ════════════════════════════════════════
+//  PANEL SWITCHING
+// ════════════════════════════════════════
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+  document.querySelectorAll('.nav-btn')[['ture','register','quiz'].indexOf(name)].classList.add('active');
+  scrollToTop();
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════
+renderCards(ture);
+buildRegister();
+</script>
+
+</body>
+</html>
