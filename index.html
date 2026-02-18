@@ -335,6 +335,38 @@ body {
   margin-bottom: 30px;
   font-size: 0.95em;
 }
+
+/* ─── KORT ─── */
+.kort-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 30px 24px;
+}
+.map-container {
+  background: white;
+  padding: 24px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* ─── MAP TOOLTIP ─── */
+.map-tooltip {
+  position: fixed;
+  background: var(--navy);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  pointer-events: none;
+  display: none;
+  z-index: 999;
+  max-width: 220px;
+  line-height: 1.4;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  border-left: 3px solid var(--gold);
+}
+.map-tooltip strong { display: block; font-family: 'Playfair Display', serif; font-size: 14px; margin-bottom: 2px; }
+
 .letter-section { margin-bottom: 20px; }
 .letter-head {
   font-family: 'Playfair Display', serif;
@@ -362,7 +394,18 @@ body {
 }
 .reg-item:hover { border-left-color: var(--sea); }
 .reg-name { color: var(--text); font-weight: 400; }
-.reg-ref { color: var(--sea); font-weight: 600; font-size: 0.85em; }
+.reg-ref { 
+  color: var(--sea); 
+  font-weight: 600; 
+  font-size: 0.85em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.reg-ref:hover { 
+  color: var(--navy); 
+  text-decoration: underline;
+}
 
 /* ─── QUIZ ─── */
 .quiz-wrap {
@@ -611,6 +654,7 @@ body {
   .reg-items { grid-template-columns: 1fr; }
   .hero-stats { gap: 18px; }
   .hero-stat-num { font-size: 1.8em; }
+  .map-container { padding: 15px; }
 }
 </style>
 </head>
@@ -633,6 +677,7 @@ body {
 <div class="nav-bar">
   <button class="nav-btn active" onclick="showPanel('ture')">🗺 Alle ture</button>
   <button class="nav-btn" onclick="showPanel('register')">📇 Register</button>
+  <button class="nav-btn" onclick="showPanel('kort')">🗾 Kort</button>
   <button class="nav-btn" onclick="showPanel('quiz')">🧭 Quiz</button>
 </div>
 
@@ -661,6 +706,423 @@ body {
       <p class="register-intro">Alle steder, naturfænomener og highlights — alfabetisk sorteret med turreference</p>
       <div id="registerContent"></div>
       <div class="back-row" style="margin-top:20px">
+        <button class="back-btn" onclick="scrollToTop()">↑ Tilbage til top</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KORT PANEL -->
+  <div class="panel" id="panel-kort">
+    <div class="kort-wrap">
+      <h2 style="text-align:center;color:var(--navy);margin-bottom:12px;font-family:'Playfair Display',serif;">Vandreture på kortet</h2>
+      <p style="text-align:center;color:var(--muted);margin-bottom:24px;font-style:italic;font-size:0.95em;">
+        Hold musen over en prik for at se turens detaljer
+      </p>
+      <div class="map-container">
+        <svg id="danmarkMap" viewBox="0 0 780 860" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:780px;height:auto;margin:0 auto;display:block;">
+          <defs>
+            <filter id="landshadow" x="-20%" y="-20%" width="150%" height="150%">
+              <feDropShadow dx="4" dy="6" stdDeviation="8" flood-color="rgba(15,30,60,0.22)"/>
+            </filter>
+            <filter id="dotshadow">
+              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.45)"/>
+            </filter>
+            <filter id="islandshadow">
+              <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="rgba(15,30,60,0.18)"/>
+            </filter>
+            <!-- Parchment texture pattern -->
+            <pattern id="parchment" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+              <rect width="4" height="4" fill="#e8dfc8"/>
+              <circle cx="1" cy="1" r="0.4" fill="#d8cdb0" opacity="0.5"/>
+              <circle cx="3" cy="3" r="0.3" fill="#cfc099" opacity="0.4"/>
+            </pattern>
+            <!-- Ocean crosshatch -->
+            <pattern id="oceanhatch" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
+              <rect width="12" height="12" fill="#1e3a5f"/>
+              <line x1="0" y1="6" x2="12" y2="6" stroke="#243f6a" stroke-width="0.5" opacity="0.6"/>
+              <line x1="6" y1="0" x2="6" y2="12" stroke="#243f6a" stroke-width="0.5" opacity="0.4"/>
+            </pattern>
+            <!-- Glow for Sweden line -->
+            <filter id="swedenGlow">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+            <!-- Land gradient -->
+            <linearGradient id="landGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#f2e8cc"/>
+              <stop offset="50%" stop-color="#e8dcb8"/>
+              <stop offset="100%" stop-color="#ddd0a0"/>
+            </linearGradient>
+          </defs>
+
+          <!-- ═══ OCEAN BACKGROUND ═══ -->
+          <rect width="780" height="860" fill="#1e3a5f" rx="16"/>
+          <rect width="780" height="860" fill="url(#oceanhatch)" rx="16" opacity="0.7"/>
+
+          <!-- Subtle depth gradient overlay on ocean -->
+          <radialGradient id="oceandepth" cx="35%" cy="55%" r="70%">
+            <stop offset="0%" stop-color="#253f6a" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#0d1f38" stop-opacity="0.5"/>
+          </radialGradient>
+          <rect width="780" height="860" fill="url(#oceandepth)" rx="16"/>
+
+          <!-- Delicate wave lines on ocean -->
+          <g opacity="0.18" stroke="#6a9fc0" stroke-width="1" fill="none">
+            <path d="M10,60 Q100,50 200,60 Q300,70 400,60 Q500,50 600,60 Q680,70 770,60"/>
+            <path d="M10,130 Q120,118 230,130 Q340,142 450,130 Q560,118 660,130 Q720,140 770,130"/>
+            <path d="M10,200 Q90,212 190,200 Q290,188 390,200 Q490,212 590,200 Q680,188 770,200"/>
+            <path d="M10,270 Q110,258 220,270 Q330,282 440,270 Q550,258 660,270 Q720,282 770,270"/>
+            <path d="M10,340 Q100,352 200,340 Q300,328 400,340 Q500,352 600,340 Q690,328 770,340"/>
+            <path d="M10,410 Q120,398 240,410 Q360,422 460,410 Q560,398 660,410 Q720,422 770,410"/>
+            <path d="M10,480 Q100,492 210,480 Q320,468 420,480 Q520,492 620,480 Q700,468 770,480"/>
+            <path d="M10,550 Q110,538 220,550 Q330,562 440,550 Q550,538 660,550 Q720,562 770,550"/>
+            <path d="M10,620 Q100,632 210,620 Q320,608 430,620 Q540,632 650,620 Q720,608 770,620"/>
+            <path d="M10,690 Q120,678 240,690 Q360,702 460,690 Q560,678 660,690 Q720,702 770,690"/>
+            <path d="M10,760 Q100,772 200,760 Q300,748 400,760 Q500,772 600,760 Q690,748 770,760"/>
+          </g>
+
+          <!-- ═══ SWEDEN WEST COASTLINE ═══ 
+               Runs down the right side — dramatic coral/terracotta color
+               with a glow effect, like a neon edge on a vintage map -->
+          <!-- Glow layer -->
+          <path d="
+            M 572,28
+            C 570,45 568,62 566,80
+            C 570,95 574,108 572,122
+            C 568,136 560,146 558,160
+            C 562,175 568,188 566,202
+            C 562,216 554,226 552,240
+            C 556,256 562,270 560,285
+            C 556,300 548,312 548,326
+            C 554,342 560,356 558,372
+            C 554,388 546,400 546,415
+            C 550,430 556,445 552,460
+            C 548,475 540,487 540,500
+          " stroke="#ff8c6a" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.25"/>
+          <!-- Main Sweden coast line -->
+          <path d="
+            M 572,28
+            C 570,45 568,62 566,80
+            C 570,95 574,108 572,122
+            C 568,136 560,146 558,160
+            C 562,175 568,188 566,202
+            C 562,216 554,226 552,240
+            C 556,256 562,270 560,285
+            C 556,300 548,312 548,326
+            C 554,342 560,356 558,372
+            C 554,388 546,400 546,415
+            C 550,430 556,445 552,460
+            C 548,475 540,487 540,500
+          " stroke="#e8724a" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Highlight on coast -->
+          <path d="
+            M 572,28
+            C 570,45 568,62 566,80
+            C 570,95 574,108 572,122
+            C 568,136 560,146 558,160
+            C 562,175 568,188 566,202
+            C 562,216 554,226 552,240
+            C 556,256 562,270 560,285
+            C 556,300 548,312 548,326
+            C 554,342 560,356 558,372
+            C 554,388 546,400 546,415
+            C 550,430 556,445 552,460
+            C 548,475 540,487 540,500
+          " stroke="#ffb090" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+
+          <!-- Sweden coast dashed continuation south (off-screen toward Bornholm) -->
+          <path d="M 540,500 C 544,518 550,535 556,552" 
+                stroke="#e8724a" stroke-width="3" fill="none" stroke-dasharray="8,6" stroke-linecap="round" opacity="0.7"/>
+
+          <!-- "Sverige" label -->
+          <text x="616" y="260" text-anchor="middle" font-size="13" fill="#e8724a" font-weight="600" opacity="0.85" font-style="italic" transform="rotate(90,616,260)">Sverige</text>
+          <text x="616" y="260" text-anchor="middle" font-size="13" fill="#ffb090" font-weight="400" opacity="0.35" font-style="italic" transform="rotate(90,616,260)">Sverige</text>
+
+          <!-- ═══ JYLLAND ═══ -->
+          <!-- Outer glow/shadow -->
+          <path d="
+            M 178,38 C 171,52 164,68 162,84 C 160,100 165,114 162,130
+            C 158,146 148,157 144,173 C 140,190 143,206 140,222
+            C 136,238 126,250 122,266 C 118,283 122,300 120,318
+            C 117,334 109,348 107,364 C 105,381 110,398 108,416
+            C 106,433 97,448 96,466 C 95,484 102,500 101,518
+            C 100,536 92,552 93,570 C 95,588 105,602 109,620
+            C 113,637 112,654 120,670 C 128,686 142,696 156,700
+            C 170,704 185,700 197,692 C 208,684 215,671 216,657
+            C 217,643 212,629 209,615 C 206,601 205,586 203,571
+            C 200,556 197,540 196,524 C 194,508 198,492 197,476
+            C 196,460 190,444 190,428 C 190,412 195,397 193,381
+            C 191,365 184,350 184,334 C 184,318 190,303 188,287
+            C 186,271 178,257 178,241 C 178,225 185,210 183,194
+            C 181,178 173,165 172,149 C 171,133 176,118 174,102
+            C 172,86 163,73 163,57 C 163,46 168,38 176,34 Z
+          " fill="url(#landGrad)" stroke="#8b6914" stroke-width="2.5" stroke-linejoin="round" filter="url(#landshadow)"/>
+
+          <!-- Jylland inner texture lines (topographic feel) -->
+          <path d="M 150,120 C 158,115 166,118 170,126" stroke="#c4a84a" stroke-width="0.8" fill="none" opacity="0.5"/>
+          <path d="M 140,200 C 150,193 162,196 166,206" stroke="#c4a84a" stroke-width="0.8" fill="none" opacity="0.5"/>
+          <path d="M 130,290 C 142,283 156,286 160,296" stroke="#c4a84a" stroke-width="0.8" fill="none" opacity="0.5"/>
+          <path d="M 125,380 C 138,373 152,376 156,386" stroke="#c4a84a" stroke-width="0.8" fill="none" opacity="0.5"/>
+          <path d="M 130,470 C 144,463 158,466 162,476" stroke="#c4a84a" stroke-width="0.8" fill="none" opacity="0.5"/>
+          <path d="M 145,560 C 158,553 172,556 176,566" stroke="#c4a84a" stroke-width="0.8" fill="none" opacity="0.5"/>
+
+          <!-- Djursland bump -->
+          <path d="M 190,295 C 200,286 215,283 224,290 C 233,297 234,312 226,321
+                   C 218,330 205,331 196,323 C 187,315 184,302 190,295 Z"
+                fill="url(#landGrad)" stroke="#8b6914" stroke-width="2"/>
+
+          <!-- Als island -->
+          <path d="M 162,658 C 150,652 138,656 134,667 C 130,678 138,690 150,694
+                   C 162,698 176,692 178,681 C 180,670 172,661 162,658 Z"
+                fill="url(#landGrad)" stroke="#8b6914" stroke-width="1.8"/>
+
+          <!-- Limfjord islands (tiny) -->
+          <ellipse cx="138" cy="222" rx="11" ry="7" fill="url(#landGrad)" stroke="#8b6914" stroke-width="1.4"/>
+          <ellipse cx="155" cy="210" rx="8" ry="5" fill="url(#landGrad)" stroke="#8b6914" stroke-width="1.2"/>
+          <ellipse cx="128" cy="235" rx="7" ry="5" fill="url(#landGrad)" stroke="#8b6914" stroke-width="1.2"/>
+
+          <!-- Jylland label -->
+          <text x="148" y="416" text-anchor="middle" font-size="15" fill="#5a3c08" font-weight="700" opacity="0.55" font-style="italic" transform="rotate(-4,148,416)">Jylland</text>
+
+          <!-- ═══ FYN ═══ -->
+          <path d="
+            M 320,510 C 305,500 287,497 274,505 C 260,514 258,532 264,548
+            C 270,564 287,574 305,576 C 323,578 342,568 350,553
+            C 358,538 352,519 338,510 Z
+          " fill="url(#landGrad)" stroke="#8b6914" stroke-width="2.5" filter="url(#islandshadow)"/>
+          <text x="307" y="536" text-anchor="middle" font-size="13" fill="#5a3c08" font-weight="700" opacity="0.55" font-style="italic">Fyn</text>
+
+          <!-- Langeland -->
+          <path d="M 316,582 C 305,575 292,578 287,589 C 282,600 287,617 298,625
+                   C 309,633 324,630 330,619 C 336,608 330,588 318,582 Z"
+                fill="url(#landGrad)" stroke="#8b6914" stroke-width="1.8"/>
+          <text x="309" y="603" text-anchor="middle" font-size="8" fill="#5a3c08" opacity="0.6">Langeland</text>
+
+          <!-- Ærø -->
+          <ellipse cx="281" cy="582" rx="18" ry="11" transform="rotate(-18,281,582)"
+                   fill="url(#landGrad)" stroke="#8b6914" stroke-width="1.5"/>
+
+          <!-- Tåsinge -->
+          <ellipse cx="305" cy="577" rx="9" ry="6" fill="url(#landGrad)" stroke="#8b6914" stroke-width="1.2"/>
+
+          <!-- ═══ SJÆLLAND ═══ -->
+          <path d="
+            M 438,384 C 422,372 404,370 390,380 C 376,390 370,408 374,426
+            C 378,444 394,458 408,462 C 394,474 378,486 374,504
+            C 370,522 380,540 395,550 C 410,560 430,560 445,551
+            C 456,563 466,578 482,583 C 498,588 516,581 527,568
+            C 538,555 540,536 533,520 C 543,512 556,503 560,489
+            C 566,473 560,453 548,441 C 536,429 519,424 504,427
+            C 506,409 500,391 488,380 C 476,369 457,365 444,371 Z
+          " fill="url(#landGrad)" stroke="#8b6914" stroke-width="2.5" filter="url(#islandshadow)"/>
+          <!-- Roskilde Fjord cutout -->
+          <path d="M 418,394 C 414,404 410,414 413,424 C 416,434 425,438 432,432
+                   C 439,426 438,416 434,406 Z" fill="#1e3a5f" opacity="0.6"/>
+          <text x="452" y="470" text-anchor="middle" font-size="14" fill="#5a3c08" font-weight="700" opacity="0.55" font-style="italic">Sjælland</text>
+
+          <!-- Samsø -->
+          <ellipse cx="348" cy="462" rx="13" ry="22" transform="rotate(22,348,462)"
+                   fill="url(#landGrad)" stroke="#8b6914" stroke-width="1.5"/>
+
+          <!-- ═══ LOLLAND / FALSTER / MØN ═══ -->
+          <path d="M 404,600 C 388,592 368,592 356,602 C 344,612 343,630 352,643
+                   C 361,656 380,661 400,659 C 420,657 438,647 442,633 C 446,619 436,603 420,598 Z"
+                fill="url(#landGrad)" stroke="#8b6914" stroke-width="2" filter="url(#islandshadow)"/>
+          <text x="396" y="628" text-anchor="middle" font-size="11" fill="#5a3c08" font-weight="600" opacity="0.55" font-style="italic">Lolland</text>
+
+          <!-- Falster -->
+          <path d="M 474,592 C 460,585 446,589 442,601 C 438,613 445,629 458,635
+                   C 471,641 487,636 492,623 C 497,610 488,596 474,592 Z"
+                fill="url(#landGrad)" stroke="#8b6914" stroke-width="1.8"/>
+          <text x="468" y="612" text-anchor="middle" font-size="8" fill="#5a3c08" opacity="0.5" font-style="italic">Falster</text>
+
+          <!-- Møn -->
+          <path d="M 508,578 C 495,573 483,578 482,590 C 481,602 493,612 506,614
+                   C 519,616 530,608 530,595 C 530,582 520,577 508,578 Z"
+                fill="url(#landGrad)" stroke="#8b6914" stroke-width="1.6"/>
+          <text x="507" y="596" text-anchor="middle" font-size="8" fill="#5a3c08" opacity="0.5" font-style="italic">Møn</text>
+
+          <!-- ═══ BORNHOLM ═══ -->
+          <path d="M 652,546 C 637,538 620,540 611,551 C 602,562 605,579 617,588
+                   C 629,597 648,596 659,587 C 670,577 667,558 654,548 Z"
+                fill="url(#landGrad)" stroke="#8b6914" stroke-width="2.5" filter="url(#islandshadow)"/>
+          <text x="636" y="567" text-anchor="middle" font-size="10" fill="#5a3c08" font-weight="700" opacity="0.65" font-style="italic">Bornholm</text>
+
+          <!-- ═══ HESSELØ (small island north of Sjælland) ═══ -->
+          <ellipse cx="430" cy="354" rx="9" ry="6" fill="url(#landGrad)" stroke="#8b6914" stroke-width="1.4"/>
+          <text x="430" y="344" text-anchor="middle" font-size="7" fill="#d4c080" opacity="0.7">Hesselø</text>
+
+          <!-- ═══ COMPASS ROSE ═══ -->
+          <g transform="translate(66,796)">
+            <circle cx="0" cy="0" r="30" fill="#132a4a" stroke="#c4a84a" stroke-width="1.5" opacity="0.9"/>
+            <!-- N arrow -->
+            <path d="M0,-24 L5,0 L0,-6 L-5,0 Z" fill="#f2e8cc"/>
+            <!-- S arrow -->
+            <path d="M0,24 L5,0 L0,6 L-5,0 Z" fill="#6a7a8a"/>
+            <!-- E/W tiny ticks -->
+            <line x1="20" y1="0" x2="14" y2="0" stroke="#c4a84a" stroke-width="1.5"/>
+            <line x1="-20" y1="0" x2="-14" y2="0" stroke="#c4a84a" stroke-width="1.5"/>
+            <circle cx="0" cy="0" r="3" fill="#c4a84a"/>
+            <text x="0" y="-32" text-anchor="middle" font-size="14" fill="#f2e8cc" font-weight="800" font-family="serif">N</text>
+            <text x="0" y="44" text-anchor="middle" font-size="11" fill="#6a7a8a" font-family="serif">S</text>
+            <text x="32" y="4" text-anchor="middle" font-size="11" fill="#6a7a8a" font-family="serif">Ø</text>
+            <text x="-32" y="4" text-anchor="middle" font-size="11" fill="#6a7a8a" font-family="serif">V</text>
+          </g>
+
+          <!-- ═══ LEGEND ═══ -->
+          <rect x="528" y="720" width="234" height="128" fill="#0d1f38" fill-opacity="0.88" stroke="#c4a84a" stroke-width="1.5" rx="10"/>
+          <text x="540" y="740" font-size="12" fill="#f2e8cc" font-weight="700" font-style="italic">Legende:</text>
+          <circle cx="550" cy="756" r="8" fill="#3a7abf" stroke="#8ab8e0" stroke-width="1.5"/>
+          <text x="564" y="760" font-size="11" fill="#c8d8e8">Sjælland (13 ture)</text>
+          <circle cx="550" cy="774" r="8" fill="#a84030" stroke="#e09080" stroke-width="1.5"/>
+          <text x="564" y="778" font-size="11" fill="#c8d8e8">Jylland (7 ture)</text>
+          <circle cx="550" cy="792" r="8" fill="#3a7a50" stroke="#80c090" stroke-width="1.5"/>
+          <text x="564" y="796" font-size="11" fill="#c8d8e8">Fyn (4 ture)</text>
+          <circle cx="550" cy="810" r="8" fill="#7b5ea7" stroke="#b09ad8" stroke-width="1.5"/>
+          <text x="564" y="814" font-size="11" fill="#c8d8e8">Skåne (2 ture)</text>
+          <circle cx="550" cy="828" r="8" fill="#c9a84c" stroke="#e8d090" stroke-width="1.5"/>
+          <text x="564" y="832" font-size="11" fill="#c8d8e8">Ø-ture / Bornholm</text>
+
+          <!-- ═══ ALLE 30 TUR-PRIKKER ═══ -->
+          <!-- Farver: SJ=#3a7abf, Jylland=#a84030, Fyn=#3a7a50, Skåne=#7b5ea7, Ø/Born=#c9a84c -->
+
+          <!-- SJÆLLAND -->
+          <g class="tur-dot" data-nr="1" data-sted="Hillerød – Esrumsø" data-aar="2010" data-plan="Henrik" data-label="SJ 1" cursor="pointer" onclick="jumpToTur(1)">
+            <circle cx="450" cy="400" r="14" fill="#3a7abf" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="450" y="405" text-anchor="middle" font-size="9" fill="white" font-weight="800">1</text>
+          </g>
+          <g class="tur-dot" data-nr="2" data-sted="Helsingør – Fredensborg" data-aar="2011" data-plan="Eskild" data-label="SJ 2" cursor="pointer" onclick="jumpToTur(2)">
+            <circle cx="490" cy="386" r="14" fill="#3a7abf" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="490" y="391" text-anchor="middle" font-size="9" fill="white" font-weight="800">2</text>
+          </g>
+          <g class="tur-dot" data-nr="3" data-sted="Sorø – Tystrup Sø" data-aar="2012" data-plan="Kim" data-label="SJ 3" cursor="pointer" onclick="jumpToTur(3)">
+            <circle cx="416" cy="488" r="14" fill="#3a7abf" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="416" y="493" text-anchor="middle" font-size="9" fill="white" font-weight="800">3</text>
+          </g>
+          <g class="tur-dot" data-nr="5" data-sted="Jyderupsti" data-aar="2013" data-plan="Nikolaj" data-label="SJ 4" cursor="pointer" onclick="jumpToTur(5)">
+            <circle cx="390" cy="446" r="14" fill="#3a7abf" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="390" y="451" text-anchor="middle" font-size="9" fill="white" font-weight="800">5</text>
+          </g>
+          <g class="tur-dot" data-nr="8" data-sted="Hillerød Vandrehjem" data-aar="2014" data-plan="Eskild" data-label="SJ 5" cursor="pointer" onclick="jumpToTur(8)">
+            <circle cx="468" cy="412" r="14" fill="#3a7abf" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="468" y="417" text-anchor="middle" font-size="9" fill="white" font-weight="800">8</text>
+          </g>
+          <g class="tur-dot" data-nr="9" data-sted="Høve – Sjællands Odde" data-aar="2015" data-plan="Nikolaj" data-label="SJ 6" cursor="pointer" onclick="jumpToTur(9)">
+            <circle cx="374" cy="420" r="14" fill="#3a7abf" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="374" y="425" text-anchor="middle" font-size="9" fill="white" font-weight="800">9</text>
+          </g>
+          <g class="tur-dot" data-nr="13" data-sted="Hvalsø – Gyldenløveshøj" data-aar="2017" data-plan="Nikolaj" data-label="SJ 7" cursor="pointer" onclick="jumpToTur(13)">
+            <circle cx="430" cy="502" r="14" fill="#3a7abf" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="430" y="507" text-anchor="middle" font-size="8" fill="white" font-weight="800">13</text>
+          </g>
+          <g class="tur-dot" data-nr="15" data-sted="Møn" data-aar="2018" data-plan="Eskild" data-label="SJ 8" cursor="pointer" onclick="jumpToTur(15)">
+            <circle cx="516" cy="596" r="14" fill="#3a7abf" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="516" y="601" text-anchor="middle" font-size="9" fill="white" font-weight="800">15</text>
+          </g>
+          <g class="tur-dot" data-nr="16" data-sted="Stevns Klint" data-aar="2018" data-plan="Nikolaj" data-label="SJ 9" cursor="pointer" onclick="jumpToTur(16)">
+            <circle cx="506" cy="546" r="14" fill="#3a7abf" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="506" y="551" text-anchor="middle" font-size="9" fill="white" font-weight="800">16</text>
+          </g>
+          <g class="tur-dot" data-nr="18" data-sted="Hvalsø – Eskilsø – Skibby" data-aar="2019" data-plan="Nikolaj" data-label="SJ 10" cursor="pointer" onclick="jumpToTur(18)">
+            <circle cx="438" cy="458" r="14" fill="#3a7abf" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="438" y="463" text-anchor="middle" font-size="8" fill="white" font-weight="800">18</text>
+          </g>
+          <g class="tur-dot" data-nr="19" data-sted="Tystrupsø – Munkedamshuset" data-aar="2020" data-plan="Henrik" data-label="SJ 11" cursor="pointer" onclick="jumpToTur(19)">
+            <circle cx="402" cy="504" r="14" fill="#3a7abf" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="402" y="509" text-anchor="middle" font-size="8" fill="white" font-weight="800">19</text>
+          </g>
+          <g class="tur-dot" data-nr="22" data-sted="Køge Ås" data-aar="2021" data-plan="Nikolaj" data-label="SJ 12" cursor="pointer" onclick="jumpToTur(22)">
+            <circle cx="488" cy="536" r="14" fill="#3a7abf" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="488" y="541" text-anchor="middle" font-size="8" fill="white" font-weight="800">22</text>
+          </g>
+          <g class="tur-dot" data-nr="30" data-sted="Røsnæs" data-aar="2025" data-plan="Nikolaj" data-label="SJ 13" cursor="pointer" onclick="jumpToTur(30)">
+            <circle cx="378" cy="460" r="14" fill="#3a7abf" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="378" y="465" text-anchor="middle" font-size="8" fill="white" font-weight="800">30</text>
+          </g>
+
+          <!-- JYLLAND -->
+          <g class="tur-dot" data-nr="7" data-sted="Dybbøl – Gendarmstien" data-aar="2014" data-plan="Kim" data-label="Jylland 1" cursor="pointer" onclick="jumpToTur(7)">
+            <circle cx="180" cy="652" r="14" fill="#a84030" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="180" y="657" text-anchor="middle" font-size="9" fill="white" font-weight="800">7</text>
+          </g>
+          <g class="tur-dot" data-nr="12" data-sted="Thorning – Hærvejen" data-aar="2016" data-plan="Henrik" data-label="Jylland 2" cursor="pointer" onclick="jumpToTur(12)">
+            <circle cx="152" cy="460" r="14" fill="#a84030" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="152" y="465" text-anchor="middle" font-size="8" fill="white" font-weight="800">12</text>
+          </g>
+          <g class="tur-dot" data-nr="17" data-sted="Ribe – Vadehavet" data-aar="2019" data-plan="Henrik" data-label="Jylland 3" cursor="pointer" onclick="jumpToTur(17)">
+            <circle cx="114" cy="578" r="14" fill="#a84030" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="114" y="583" text-anchor="middle" font-size="8" fill="white" font-weight="800">17</text>
+          </g>
+          <g class="tur-dot" data-nr="21" data-sted="Grejsdalen – Jellingstenen" data-aar="2021" data-plan="Eskild" data-label="Jylland 4" cursor="pointer" onclick="jumpToTur(21)">
+            <circle cx="162" cy="510" r="14" fill="#a84030" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="162" y="515" text-anchor="middle" font-size="8" fill="white" font-weight="800">21</text>
+          </g>
+          <g class="tur-dot" data-nr="23" data-sted="Mols Bjerge" data-aar="2022" data-plan="Henrik" data-label="Jylland 5" cursor="pointer" onclick="jumpToTur(23)">
+            <circle cx="234" cy="450" r="14" fill="#a84030" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="234" y="455" text-anchor="middle" font-size="8" fill="white" font-weight="800">23</text>
+          </g>
+          <g class="tur-dot" data-nr="26" data-sted="Vestbirk – Vrads Station" data-aar="2023" data-plan="Nikolaj" data-label="Jylland 6" cursor="pointer" onclick="jumpToTur(26)">
+            <circle cx="167" cy="484" r="14" fill="#a84030" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="167" y="489" text-anchor="middle" font-size="8" fill="white" font-weight="800">26</text>
+          </g>
+          <g class="tur-dot" data-nr="28" data-sted="Middelfart" data-aar="2024" data-plan="Kim" data-label="Jylland 7" cursor="pointer" onclick="jumpToTur(28)">
+            <circle cx="255" cy="506" r="14" fill="#a84030" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="255" y="511" text-anchor="middle" font-size="8" fill="white" font-weight="800">28</text>
+          </g>
+
+          <!-- FYN -->
+          <g class="tur-dot" data-nr="6" data-sted="Æbleø" data-aar="2013" data-plan="Kim" data-label="Fyn 1" cursor="pointer" onclick="jumpToTur(6)">
+            <circle cx="285" cy="500" r="14" fill="#3a7a50" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="285" y="505" text-anchor="middle" font-size="9" fill="white" font-weight="800">6</text>
+          </g>
+          <g class="tur-dot" data-nr="10" data-sted="Langeland" data-aar="2015" data-plan="Kim" data-label="Fyn 2" cursor="pointer" onclick="jumpToTur(10)">
+            <circle cx="318" cy="600" r="14" fill="#3a7a50" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="318" y="605" text-anchor="middle" font-size="8" fill="white" font-weight="800">10</text>
+          </g>
+          <g class="tur-dot" data-nr="14" data-sted="Fyn – syd for Nyborg" data-aar="2017" data-plan="Kim" data-label="Fyn 3" cursor="pointer" onclick="jumpToTur(14)">
+            <circle cx="346" cy="536" r="14" fill="#3a7a50" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="346" y="541" text-anchor="middle" font-size="8" fill="white" font-weight="800">14</text>
+          </g>
+          <g class="tur-dot" data-nr="20" data-sted="Fynshoved" data-aar="2020" data-plan="Kim" data-label="Fyn 4" cursor="pointer" onclick="jumpToTur(20)">
+            <circle cx="367" cy="492" r="14" fill="#3a7a50" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="367" y="497" text-anchor="middle" font-size="8" fill="white" font-weight="800">20</text>
+          </g>
+
+          <!-- Ø-TURE -->
+          <g class="tur-dot" data-nr="24" data-sted="Hesselø" data-aar="2022" data-plan="Kim" data-label="Ø-tur" cursor="pointer" onclick="jumpToTur(24)">
+            <circle cx="430" cy="354" r="14" fill="#c9a84c" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="430" y="359" text-anchor="middle" font-size="8" fill="white" font-weight="800">24</text>
+          </g>
+          <g class="tur-dot" data-nr="25" data-sted="Lolland" data-aar="2023" data-plan="Eskild" data-label="Ø-tur" cursor="pointer" onclick="jumpToTur(25)">
+            <circle cx="396" cy="630" r="14" fill="#c9a84c" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="396" y="635" text-anchor="middle" font-size="8" fill="white" font-weight="800">25</text>
+          </g>
+          <g class="tur-dot" data-nr="27" data-sted="Orø" data-aar="2024" data-plan="Henrik" data-label="Ø-tur" cursor="pointer" onclick="jumpToTur(27)">
+            <circle cx="415" cy="446" r="14" fill="#c9a84c" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="415" y="451" text-anchor="middle" font-size="8" fill="white" font-weight="800">27</text>
+          </g>
+          <g class="tur-dot" data-nr="29" data-sted="Bornholm" data-aar="2025" data-plan="Eskild" data-label="Bornholm" cursor="pointer" onclick="jumpToTur(29)">
+            <circle cx="636" cy="567" r="14" fill="#c9a84c" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="636" y="572" text-anchor="middle" font-size="8" fill="white" font-weight="800">29</text>
+          </g>
+
+          <!-- SKÅNE -->
+          <g class="tur-dot" data-nr="4" data-sted="Kullen" data-aar="2012" data-plan="Eskild" data-label="Skåne 1" cursor="pointer" onclick="jumpToTur(4)">
+            <circle cx="568" cy="110" r="14" fill="#7b5ea7" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="568" y="115" text-anchor="middle" font-size="9" fill="white" font-weight="800">4</text>
+          </g>
+          <g class="tur-dot" data-nr="11" data-sted="Söderåsen" data-aar="2016" data-plan="Eskild" data-label="Skåne 2" cursor="pointer" onclick="jumpToTur(11)">
+            <circle cx="572" cy="156" r="14" fill="#7b5ea7" stroke="white" stroke-width="2.5" filter="url(#dotshadow)"/>
+            <text x="572" y="161" text-anchor="middle" font-size="8" fill="white" font-weight="800">11</text>
+          </g>
+
+          <!-- Footer note -->
+          <text x="390" y="848" text-anchor="middle" font-size="10" fill="#7a9ab8" font-style="italic" opacity="0.8">Klik på en prik for at åbne turen · Bornholm er rykket tættere på</text>
+        </svg>
+      </div>
+      <!-- Tooltip -->
+      <div class="map-tooltip" id="mapTooltip"></div>
+      <div class="back-row" style="margin-top:30px">
         <button class="back-btn" onclick="scrollToTop()">↑ Tilbage til top</button>
       </div>
     </div>
@@ -823,14 +1285,14 @@ const ture = [
   {
     nr: 16, aar: 2018, saeson: "Efterår", maaned: "21–22 sep",
     sted: "Stevns Klint", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 9",
-    planlægger: "H", planlæggerNavn: "Henrik",
+    planlægger: "N", planlæggerNavn: "Nikolaj",
     noter: "Henrik laver super aftensmad og is. Ruten ændres fra Jylland pga. regn. Dixet med sexord (Kamasutra!). 24 km og smukke klinter. Styrtregn og søger læ til frokost. Fætter krads med god humor.",
     highlights: ["Stevns Klint", "Dixet med sexord", "24 km", "Kamasutra-ord"]
   },
   {
     nr: 17, aar: 2019, saeson: "Forår", maaned: "29–30 mar",
     sted: "Ribe – Vadehavet", type: "jylland", typeLabel: "Jylland", typeSekvens: "Jylland 3",
-    planlægger: "N", planlæggerNavn: "Nikolaj",
+    planlægger: "H", planlæggerNavn: "Henrik",
     noter: "God gullasch og snak med naturvejleder Kristina. Andre i shelter — ikke alene som 'plejer'. Fin udsigt på diget og ved slusen. God morgenmad og perfekt frokost på bænk i Ribe.",
     highlights: ["Gullasch", "Naturvejleder Kristina", "Vadehavet", "Frokost i Ribe"]
   },
@@ -838,21 +1300,21 @@ const ture = [
     nr: 18, aar: 2019, saeson: "Efterår", maaned: "",
     sted: "Hvalsø – Eskilsø – Skibby", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 10",
     planlægger: "N", planlæggerNavn: "Nikolaj",
-    noter: "Keep-it-simple-tur. Sov i Hvalsø. Skuldelevås – Østby – Sønderby – Eskilsø – Skibby. Så 'Bukke'. Støvlen næsten døde. Kedelig flad ø ;) Eskildsøl. Muflonneger. Gode æbler. Purløgsmark af Erik. Sjov guidet tur i Skuldelev.",
+    noter: "Keep-it-simple-tur. Sov i Hvalsø. Skuldelevås – Østby – Sønderby – Eskilsø – Skibby. Så Mufloner. Støvlen næsten døde. Kedelig flad ø ;) Eskildsøl. Muflonneger. Gode æbler. Purløgsmark af Erik. Sjov guidet tur i Skuldelev.",
     highlights: ["Eskilsø", "Muflonneger", "Purløgsmark af Erik", "Guidet tur Skuldelev"]
   },
   {
     nr: 19, aar: 2020, saeson: "Forår", maaned: "",
     sted: "Tystrupsø – Munkedamshuset", type: "sj", typeLabel: "SJ", typeSekvens: "SJ 11",
     planlægger: "H", planlæggerNavn: "Henrik",
-    noter: "Henrik tager corona-udfordringen op. Finder shelter ved Kongskilde. Godt bål holdt ved af Nikolaj. Brie i olie — knas og ost i bollen. Lækre tun-boller til frokost. Hilste på X-svigerfamilie. 18 km / 22.000 skridt. Henriks nye støvler bestod jomfrutur.",
+    noter: "Henrik tager corona-udfordringen op. Finder shelter ved Kongskilde. Godt bål holdt ved af Nikolaj. Brie i olie — knas og ost i bollen. Lækre tun-boller til frokost. Hilste på Nikolajs X-svigerfamilie - Jakob, Mette og Filip. 18 km / 22.000 skridt. Henriks nye støvler bestod jomfrutur.",
     highlights: ["Corona-tur", "Brie i olie", "Kongskilde", "18 km", "Nye støvler"]
   },
   {
     nr: 20, aar: 2020, saeson: "Efterår", maaned: "",
     sted: "Fynshoved", type: "fyn", typeLabel: "Fyn", typeSekvens: "Fyn 4",
     planlægger: "K", planlæggerNavn: "Kim",
-    noter: "Sov i Kims lækre brandbil. Strand, skov og kravlen. Frokost i nogens have ved bugten. Badede på lavt vand. Eskild støvlesål gik løs. Gik over mark og tæt på køer. 23.000 skridt.",
+    noter: "Sov i Kims lækre brandbil. Strand, skov og kravlen. Frokost i nogens have ved bugten. Badede på lavt vand. Eskild støvlesål gik løs. Gik over mark og tæt på køer. Vi nåede dog ikke helt op på Fyns Hoved. 23.000 skridt.",
     highlights: ["Brandbil som soveværelse", "Eskild støvlesål", "Fynshoved", "23.000 skridt"]
   },
   {
@@ -880,7 +1342,7 @@ const ture = [
     nr: 24, aar: 2022, saeson: "Efterår", maaned: "1–2 okt",
     sted: "Hesselø", type: "oe", typeLabel: "Ø-tur", typeSekvens: "Ø-tur",
     planlægger: "K", planlæggerNavn: "Kim",
-    noter: "Flot tur med gode billedmuligheder. Nikolaj kommer overraskende forbi efter sygdom.",
+    noter: "Flot tur med gode billedmuligheder. Nikolaj kommer overraskende forbi efter sygdom. ✏️ Mangler detaljer: Hvor sov I? Hvad spiste I? Hvad blev der grinet af? Hvem havde de gode øl med?",
     highlights: ["Hesselø", "Nikolaj overrasker efter sygdom"]
   },
   {
@@ -985,11 +1447,49 @@ const allQuizQuestions = [
   { q: "Hvad var unikt ved Eskilds bil på Vestbirk-turen (tur #26)?", hint: "Et svar på elbil-problemer", svar: "Han åbnede den med en død mobiltelefon", forkert: ["Den havde ingen sæder","Den kørte kun på gas","Den var en brandbil"], forklaring: "Eskild åbnede sin Tesla på magisk vis med en fuldstændig flad mobil." },
   { q: "Hvad lavede Henrik til aftensmad på Stevns Klint-turen (tur #16)?", hint: "Og han sørgede for is til dessert", svar: "Super aftensmad og is", forkert: ["Lasagne","Fasan","Gullasch"], forklaring: "Henrik stod for aftensmad OG is på Stevns Klint-turen i 2018." },
   { q: "Hvad fandt de på Køge Ås-turen (tur #22) der havde været forsvundet i 10 år?", hint: "Et køkkenredskab", svar: "En kniv", forkert: ["En ske","En lommelygte","Et kompas"], forklaring: "På Køge Ås-turen 2021 dukkede en kniv op, der havde været 'væk' i 10 år." },
-  { q: "Hvad talte de om på Vestbirk-turen (tur #26) vedrørende fremtiden?", hint: "En rund fødselsdag", svar: "50-årstur til Kroatien", forkert: ["En 40-årsrunde","En Nytårsfejring","En bryllupstur"], forklaring: "På tur #26 talte de om en 50-årstur." },
   { q: "Hvem glemte vandrestøvlerne på Orø-turen (tur #27)?", hint: "Han lavede lammeburger i stedet", svar: "Nikolaj", forkert: ["Henrik","Kim","Eskild"], forklaring: "Nikolaj glemte sine vandrestøvler på Orø-turen 2024, men lavede god lammeburger." },
   { q: "Hvad er det sjove kælenavn for Eskilsø på tur #18?", hint: "En ordleg med Eskilsø og et navn", svar: "Eskildsøl", forkert: ["Eskiland","Eskilholm","Eskildø"], forklaring: "På tur #18 til Eskilsø lavede de sjovt ordspil med navnet: 'Eskildsøl'." },
   { q: "Hvad er corona-turen (tur #19) bedst husket for til aftensmad?", hint: "Osten smeldte i olien", svar: "Brie i olie i bollen", forkert: ["Lasagne","Fasan","Gullasch"], forklaring: "Henrik fandt på at smelte brie i olie — knas og ost i bollen — på corona-turen 2020." }
 ];
+
+// ════════════════════════════════════════
+//  MAP TOOLTIP
+// ════════════════════════════════════════
+function initMapTooltip() {
+  const tooltip = document.getElementById('mapTooltip');
+  const dots = document.querySelectorAll('.tur-dot');
+  dots.forEach(dot => {
+    dot.addEventListener('mouseenter', (e) => {
+      const nr = dot.dataset.nr;
+      const sted = dot.dataset.sted;
+      const aar = dot.dataset.aar;
+      const plan = dot.dataset.plan;
+      const label = dot.dataset.label;
+      tooltip.innerHTML = `<strong>#${nr} ${sted}</strong>${aar} · ${label}<br>Planlægger: ${plan}`;
+      tooltip.style.display = 'block';
+    });
+    dot.addEventListener('mousemove', (e) => {
+      tooltip.style.left = (e.clientX + 14) + 'px';
+      tooltip.style.top = (e.clientY - 10) + 'px';
+    });
+    dot.addEventListener('mouseleave', () => {
+      tooltip.style.display = 'none';
+    });
+  });
+}
+
+function jumpToTur(nr) {
+  showPanel('ture');
+  setTimeout(() => {
+    const card = document.getElementById('tur-' + nr);
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card.style.transition = 'box-shadow 0.3s';
+      card.style.boxShadow = '0 0 0 4px #c9a84c';
+      setTimeout(() => { card.style.boxShadow = ''; }, 1400);
+    }
+  }, 120);
+}
 
 // ════════════════════════════════════════
 //  RENDER CARDS
@@ -1032,10 +1532,11 @@ function renderCards(data, query = '') {
     const sted = highlightText(t.sted, query);
     const noter = highlightText(t.noter, query);
     const planner = t.planlæggerNavn;
+    const cardId = t.aflyst ? `tur-aflyst` : `tur-${t.nr}`;
 
     if (t.aflyst) {
       cards.push(`
-        <div class="tur-card" style="border-top-color:#aaa;opacity:0.5;background:#f0f0f0;">
+        <div class="tur-card" id="${cardId}" style="border-top-color:#aaa;opacity:0.5;background:#f0f0f0;">
           <div class="card-header">
             <div class="card-num" style="background:#999;font-size:1.6em;">✕</div>
             <div class="card-meta">
@@ -1053,7 +1554,7 @@ function renderCards(data, query = '') {
 
     realCount++;
     cards.push(`
-      <div class="tur-card ${cardClass}">
+      <div class="tur-card ${cardClass}" id="${cardId}">
         <div class="card-header">
           <div class="card-num">#${t.nr}</div>
           <div class="card-meta">
@@ -1072,7 +1573,6 @@ function renderCards(data, query = '') {
       </div>
     `);
 
-    // Insert top/bottom nav after every 5 real cards (not after the last)
     if (realCount % 5 === 0 && realCount < data.filter(x => !x.aflyst && !x.fremtid).length) {
       cards.push(`
         <div class="grid-nav" style="grid-column:1/-1;display:flex;justify-content:center;gap:12px;padding:10px 0;">
@@ -1113,17 +1613,27 @@ function clearSearch() {
 //  ALPHABETICAL REGISTER
 // ════════════════════════════════════════
 function buildRegister() {
-  const entries = [];
+  const entriesMap = new Map();
+  
   ture.forEach(t => {
-    if (t.fremtid) return;
-    // Sted
-    entries.push({ name: t.sted, ref: `#${t.nr}` });
-    // Highlights
+    if (t.fremtid || t.aflyst) return;
+    
+    const stedKey = `${t.sted.toLowerCase()}|${t.nr}`;
+    if (!entriesMap.has(stedKey)) {
+      entriesMap.set(stedKey, { name: t.sted, ref: `#${t.nr}`, turNr: t.nr });
+    }
+    
     t.highlights.forEach(h => {
-      if (h && h.length > 2) entries.push({ name: h, ref: `#${t.nr}` });
+      if (h && h.length > 2) {
+        const hKey = `${h.toLowerCase()}|${t.nr}`;
+        if (!entriesMap.has(hKey)) {
+          entriesMap.set(hKey, { name: h, ref: `#${t.nr}`, turNr: t.nr });
+        }
+      }
     });
   });
 
+  const entries = Array.from(entriesMap.values());
   entries.sort((a, b) => a.name.localeCompare(b.name, 'da'));
 
   let html = '';
@@ -1135,10 +1645,23 @@ function buildRegister() {
       currentLetter = letter;
       html += `<div class="letter-section"><div class="letter-head">${letter}</div><div class="reg-items">`;
     }
-    html += `<div class="reg-item"><span class="reg-name">${e.name}</span><span class="reg-ref">Tur ${e.ref}</span></div>`;
+    html += `<div class="reg-item"><span class="reg-name">${e.name}</span><a href="#tur-${e.turNr}" class="reg-ref" onclick="scrollToTur(${e.turNr}); return false;">Tur ${e.ref}</a></div>`;
   });
   if (currentLetter) html += '</div></div>';
   document.getElementById('registerContent').innerHTML = html;
+}
+
+function scrollToTur(turNr) {
+  showPanel('ture');
+  setTimeout(() => {
+    const card = document.getElementById(`tur-${turNr}`);
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card.style.transition = 'box-shadow 0.3s';
+      card.style.boxShadow = '0 0 0 4px #c9a84c';
+      setTimeout(() => { card.style.boxShadow = ''; }, 1200);
+    }
+  }, 100);
 }
 
 // ════════════════════════════════════════
@@ -1266,7 +1789,7 @@ function showPanel(name) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(`panel-${name}`).classList.add('active');
-  document.querySelectorAll('.nav-btn')[['ture','register','quiz'].indexOf(name)].classList.add('active');
+  document.querySelectorAll('.nav-btn')[['ture','register','kort','quiz'].indexOf(name)].classList.add('active');
   scrollToTop();
 }
 
@@ -1283,6 +1806,7 @@ function scrollToBottom() {
 // ════════════════════════════════════════
 renderCards(ture);
 buildRegister();
+initMapTooltip();
 </script>
 </body>
 </html>
